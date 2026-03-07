@@ -2276,26 +2276,34 @@ opacity:0.7;
 
 
     /* ===============================
-       MEDIA DROP PAGE
-    =============================== */
-    .media-drop-page {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 20px;
-      align-items:center;
-      background: var(--bg-main);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-    }
-    
-    /* Media controls container */
+   MEDIA DROP PAGE
+=============================== */
+.media-drop-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  align-items: center;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Media controls container */
 .media-controls {
   display: flex;
   flex-wrap: wrap;       /* Wrap on small screens */
   align-items: center;
   gap: 12px;             /* Space between search and filters */
   margin: 12px 0;
+
+  /* Make sticky */
+  position: sticky;
+  top: 0;                /* Stick to the top */
+  background: var(--bg-main); /* Same as page background */
+  z-index: 1000;         /* Stay above other content */
+  padding: 12px 0;       /* Optional: give it some vertical padding */
+  border-bottom: 1px solid #ddd; /* Optional: subtle bottom line */
 }
 
 /* Search input */
@@ -2321,33 +2329,32 @@ opacity:0.7;
   gap: 8px;               /* Space between buttons */
 }
 
-    .media-drop-header {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+.media-drop-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    .media-drop-header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin: 0;
-    }
+.media-drop-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
 
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
-    .header-controls input#mediaDropSearch {
-      flex: 1;
-      padding: 10px 16px;
-      border-radius: 24px;
-      border: 1px solid #ccc;
-      outline: none;
-      font-size: 1rem;
-    }
-
+.header-controls input#mediaDropSearch {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 24px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+}
     .filters-scroll {
       display: flex;
       gap: 10px;
