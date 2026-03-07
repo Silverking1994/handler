@@ -2284,7 +2284,6 @@ opacity:0.7;
   gap: 20px;
   padding: 20px;
   align-items: center;
-  background: var(--bg-main);
   color: var(--text-main);
   font-family: 'Inter', sans-serif;
 }
@@ -2300,7 +2299,6 @@ opacity:0.7;
   /* Make sticky */
   position: sticky;
   top: 0;                /* Stick to the top */
-  background: var(--bg-main); /* Same as page background */
   z-index: 1000;         /* Stay above other content */
   padding: 12px 0;       /* Optional: give it some vertical padding */
   border-bottom: 1px solid #ddd; /* Optional: subtle bottom line */
