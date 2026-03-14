@@ -1,223 +1,191 @@
 /* =====================================================
-   RENDER SHIPMENT TRACKER
+   RENDER SHIPMENT PAGE
 ===================================================== */
+function renderShipmentPage(data) {
+  const container = document.getElementById("app-view");
+  if (!container) return;
 
-function renderShipmentTracker(containerId){
+  container.innerHTML = `
+    <div class="shipment-page">
 
-const container = document.getElementById(containerId);
+      <!-- HERO -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1><i class="fas fa-truck-fast"></i> Global Shipment Tracking</h1>
+          <p>Track packages worldwide with real-time logistics updates and delivery status.</p>
+          <div class="hero-track">
+            <input type="text" id="trackingInput" placeholder="Enter Tracking Number"/>
+            <button id="trackBtn" class="btn" disabled>Track Package</button>
+          </div>
+        </div>
+      </section>
 
-if(!container) return;
+      <!-- FEATURES -->
+      <section class="grid">
+        <div class="card feature-card">
+          <i class="fas fa-location-dot"></i>
+          <h3>Real-Time Tracking</h3>
+          <p>Follow shipments live with accurate location updates.</p>
+        </div>
+        <div class="card feature-card">
+          <i class="fas fa-globe"></i>
+          <h3>Global Logistics</h3>
+          <p>Track shipments across multiple international carriers.</p>
+        </div>
+        <div class="card feature-card">
+          <i class="fas fa-shield-halved"></i>
+          <h3>Secure Delivery</h3>
+          <p>Your packages are protected with secure logistics handling.</p>
+        </div>
+      </section>
 
-container.innerHTML = `
+      <!-- HOW IT WORKS -->
+      <section class="card">
+        <h2 class="title">How Shipment Tracking Works</h2>
+        <div class="steps">
+          <div class="step"><i class="fas fa-barcode"></i><br>Enter Tracking Number</div>
+          <div class="step"><i class="fas fa-search"></i><br>System Finds Shipment</div>
+          <div class="step"><i class="fas fa-route"></i><br>View Delivery Status</div>
+          <div class="step"><i class="fas fa-box-open"></i><br>Package Delivered</div>
+        </div>
+      </section>
 
-<div class="shipment-page">
+      <!-- TRACKING RESULT -->
+      <section id="trackingResult" class="card hide">
+        <h3>Shipment Result</h3>
+        <div id="resultContent" style="margin-top:20px;"></div>
+        <button id="viewShipmentBtn" class="btn btn-view">View Shipment</button>
+      </section>
 
-<section class="hero-section">
-<div class="hero-content">
+      <!-- PRELOADER -->
+      <div class="preloader hide" id="shipmentPreloader">
+        <div class="loader"></div>
+      </div>
 
-<h1>Global Shipment Tracking</h1>
+    </div>
+  `;
 
-<p>
-Track packages worldwide with real-time logistics updates
-and delivery status.
-</p>
-
-<div class="hero-track">
-
-<input
-type="text"
-id="trackingInput"
-placeholder="Enter Tracking Number"
-/>
-
-<button id="trackBtn" class="btn" disabled>
-Track Package
-</button>
-
-</div>
-</div>
-</section>
-
-
-<section id="trackingResult" class="card hide">
-
-<h3>Shipment Result</h3>
-
-<div id="resultContent"></div>
-
-<button id="viewShipmentBtn" class="btn btn-view">
-View Shipment
-</button>
-
-</section>
-
-
-<div class="preloader hide" id="shipmentPreloader">
-<div class="loader"></div>
-</div>
-
-</div>
-
-`;
-
-initShipmentTracker();
-
+  initShipmentTracker();
 }
-
 
 /* =====================================================
    SHIPMENT TRACKER LOGIC
 ===================================================== */
+function initShipmentTracker() {
+  const input = document.getElementById("trackingInput");
+  const trackBtn = document.getElementById("trackBtn");
+  const resultBox = document.getElementById("trackingResult");
+  const resultContent = document.getElementById("resultContent");
+  const preloader = document.getElementById("shipmentPreloader");
+  const viewBtn = document.getElementById("viewShipmentBtn");
 
-let trackerMessageListenerRegistered = false;
+  if (!input || !trackBtn || !preloader) return;
 
-function initShipmentTracker(){
+  let timeoutRef = null;
+  let currentTrackingNumber = null;
 
-bindTrackerUI();
+  // INPUT VALIDATION
+  input.addEventListener("input", () => {
+    const value = input.value.trim();
+    if (resultBox) resultBox.classList.add("hide");
+    trackBtn.disabled = !value;
+    trackBtn.style.opacity = value ? "1" : ".6";
+  });
 
-if(!trackerMessageListenerRegistered){
+  // TRACK BUTTON CLICK
+  trackBtn.addEventListener("click", () => {
+    const trackingNumber = input.value.trim();
+    if (!trackingNumber) return;
+    currentTrackingNumber = trackingNumber;
 
+    // SHOW PRELOADER
+    preloader.classList.remove("hide");
+    void preloader.offsetWidth; // force reflow
+    preloader.classList.add("show");
+
+    // SEND TRACKING MESSAGE TO PARENT
+    
+    parent.postMessage({
+type: "TRACK_SHIPMENT",
+payload: {
+trackingNumber: currentTrackingNumber
+}
+}, "*");
+
+  
+
+    // TIMEOUT HANDLER
+timeoutRef = setTimeout(() => {
+  preloader.classList.remove("show"); // hide preloader
+  showAlert("Network timeout. Please try again.", "danger");
+}, 10000);
+  });
+
+  // HANDLE RESPONSE FROM PARENT
+  
+  function handleTrackingResponse(event) {
+    const { type, data } = event.data || {};
+    if (type !== "TRACKING_RESPONSE") return;
+
+    clearTimeout(timeoutRef);
+    preloader.classList.add("hide");
+
+    if (!data || !data.found) {
+      showAlert("Shipment not found", "danger");
+      return;
+    }
+
+    if (resultBox) resultBox.classList.remove("hide");
+    if (resultContent) {
+      resultContent.innerHTML = `
+        <p><strong>Tracking #:</strong> ${data.trackingNumber}</p>
+        <p><strong>Status:</strong> ${data.status}</p>
+      `;
+    }
+
+    showAlert("Shipment found successfully", "success");
+
+    // SCROLL TO RESULT
+    setTimeout(() => {
+      const main = document.querySelector(".main") || document.body;
+      if (main && resultBox) {
+        main.scrollTo({ top: resultBox.offsetTop - 20, behavior: "smooth" });
+      }
+    }, 100);
+  }
+
+  window.removeEventListener("message", handleTrackingResponse);
 window.addEventListener("message", handleTrackingResponse);
 
-trackerMessageListenerRegistered = true;
+  // VIEW BUTTON
+  if (viewBtn) {
+    viewBtn.addEventListener("click", () => {
+      if (!currentTrackingNumber) return;
 
+      window.parent.postMessage({
+  type: "VIEW_SHIPMENT",
+  payload: {
+    trackingNumber: currentTrackingNumber
+  }
+}, "*");
+
+      input.value = "";
+      trackBtn.disabled = true;
+      trackBtn.style.opacity = ".6";
+      if (resultBox) resultBox.classList.add("hide");
+    });
+  }
 }
-
-}
-
-
-function bindTrackerUI(){
-
-const input = document.getElementById("trackingInput");
-const trackBtn = document.getElementById("trackBtn");
-const resultBox = document.getElementById("trackingResult");
-const resultContent = document.getElementById("resultContent");
-const preloader = document.getElementById("shipmentPreloader");
-const viewBtn = document.getElementById("viewShipmentBtn");
-
-if(!input || !trackBtn || !preloader) return;
-
-let currentTrackingNumber = null;
-let timeoutRef = null;
-
-
-/* INPUT */
-
-input.addEventListener("input",()=>{
-
-const value = input.value.trim();
-
-if(resultBox) resultBox.classList.add("hide");
-
-trackBtn.disabled = !value;
-
-});
-
-
-/* TRACK BUTTON */
-
-trackBtn.addEventListener("click",()=>{
-
-const trackingNumber = input.value.trim();
-
-if(!trackingNumber) return;
-
-currentTrackingNumber = trackingNumber;
-
-preloader.classList.remove("hide");
-
-preloader.classList.add("show");
-
-
-sendMessage("TRACK_SHIPMENT",{
-trackingNumber
-});
-
-
-timeoutRef = setTimeout(()=>{
-
-preloader.classList.remove("show");
-
-showAlert("Network timeout","danger");
-
-},10000);
-
-});
-
-
-/* VIEW BUTTON */
-
-if(viewBtn){
-
-viewBtn.addEventListener("click",()=>{
-
-if(!currentTrackingNumber) return;
-
-sendMessage("VIEW_SHIPMENT",{
-trackingNumber:currentTrackingNumber
-});
-
-});
-
-}
-
-}
-
 
 /* =====================================================
-   HANDLE RESPONSE
+   HELPER ALERT FUNCTION
 ===================================================== */
-
-function handleTrackingResponse(event){
-
-const {type,data} = event.data || {};
-
-if(type !== "TRACKING_RESPONSE") return;
-
-const resultBox = document.getElementById("trackingResult");
-const resultContent = document.getElementById("resultContent");
-const preloader = document.getElementById("shipmentPreloader");
-
-if(preloader) preloader.classList.add("hide");
-
-if(!data || !data.found){
-
-showAlert("Shipment not found","danger");
-
-return;
-
-}
-
-if(resultBox) resultBox.classList.remove("hide");
-
-if(resultContent){
-
-resultContent.innerHTML = `
-<p><strong>Tracking #:</strong> ${data.trackingNumber}</p>
-<p><strong>Status:</strong> ${data.status}</p>
-`;
-
-}
-
-showAlert("Shipment found successfully","success");
-
+function showAlert(msg, type = "info") {
+  const alertEl = document.createElement("div");
+  alertEl.className = `alert alert-${type}`;
+  alertEl.innerText = msg;
+  document.body.appendChild(alertEl);
+  setTimeout(() => alertEl.remove(), 3000);
 }
 
 
-/* =====================================================
-   ALERT
-===================================================== */
-
-function showAlert(msg,type="info"){
-
-const alert = document.createElement("div");
-
-alert.className = `alert alert-${type}`;
-
-alert.innerText = msg;
-
-document.body.appendChild(alert);
-
-setTimeout(()=>alert.remove(),3000);
-
-}
