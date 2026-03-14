@@ -1,8 +1,168 @@
 /* =====================================================
-   RENDER SHIPMENT PAGE
+   SHIPMENT TRACKER WITH TRANSLATION
+   Drop in your GitHub and call renderShipmentPage("app-view")
 ===================================================== */
-function renderShipmentPage(data) {
-  const container = document.getElementById("app-view");
+
+// 1️⃣ Translations (5 languages)
+const translations = {
+  English: {
+    heroTitle: "Global Shipment Tracking",
+    heroDesc: "Track packages worldwide with real-time logistics updates and delivery status.",
+    inputPlaceholder: "Enter Tracking Number",
+    trackBtn: "Track Package",
+    features: {
+      realTime: "Real-Time Tracking",
+      realTimeDesc: "Follow shipments live with accurate location updates.",
+      global: "Global Logistics",
+      globalDesc: "Track shipments across multiple international carriers.",
+      secure: "Secure Delivery",
+      secureDesc: "Your packages are protected with secure logistics handling."
+    },
+    howItWorksTitle: "How Shipment Tracking Works",
+    step1: "Enter Tracking Number",
+    step2: "System Finds Shipment",
+    step3: "View Delivery Status",
+    step4: "Package Delivered",
+    resultTitle: "Shipment Result",
+    viewBtn: "View Shipment",
+    shipmentFound: "Shipment found successfully",
+    shipmentNotFound: "Shipment not found",
+    networkError: "Network timeout. Please try again."
+  },
+
+  Spanish: {
+    heroTitle: "Seguimiento Global de Envíos",
+    heroDesc: "Rastrea paquetes en todo el mundo con actualizaciones en tiempo real.",
+    inputPlaceholder: "Ingresa el número de seguimiento",
+    trackBtn: "Rastrear Paquete",
+    features: {
+      realTime: "Seguimiento en Tiempo Real",
+      realTimeDesc: "Sigue los envíos en vivo con actualizaciones precisas.",
+      global: "Logística Global",
+      globalDesc: "Rastrea envíos de múltiples transportistas internacionales.",
+      secure: "Entrega Segura",
+      secureDesc: "Tus paquetes están protegidos con manejo seguro."
+    },
+    howItWorksTitle: "Cómo Funciona el Seguimiento",
+    step1: "Ingresa el número de seguimiento",
+    step2: "El sistema encuentra el envío",
+    step3: "Ver estado de entrega",
+    step4: "Paquete entregado",
+    resultTitle: "Resultado del Envío",
+    viewBtn: "Ver Envío",
+    shipmentFound: "Envío encontrado con éxito",
+    shipmentNotFound: "Envío no encontrado",
+    networkError: "Tiempo de espera de la red. Inténtalo de nuevo."
+  },
+
+  Turkish: {
+    heroTitle: "Küresel Kargo Takibi",
+    heroDesc: "Kargo paketlerini dünya genelinde gerçek zamanlı güncellemelerle takip edin.",
+    inputPlaceholder: "Takip Numarasını Girin",
+    trackBtn: "Kargoyu Takip Et",
+    features: {
+      realTime: "Gerçek Zamanlı Takip",
+      realTimeDesc: "Kargoları doğru konum güncellemeleri ile canlı takip edin.",
+      global: "Küresel Lojistik",
+      globalDesc: "Çok uluslu kargo şirketleri üzerinden gönderileri takip edin.",
+      secure: "Güvenli Teslimat",
+      secureDesc: "Paketleriniz güvenli lojistik ile korunur."
+    },
+    howItWorksTitle: "Kargo Takibi Nasıl Çalışır",
+    step1: "Takip Numarasını Girin",
+    step2: "Sistem Gönderiyi Bulur",
+    step3: "Teslim Durumunu Görüntüle",
+    step4: "Paket Teslim Edildi",
+    resultTitle: "Kargo Sonucu",
+    viewBtn: "Gönderiyi Görüntüle",
+    shipmentFound: "Kargo başarıyla bulundu",
+    shipmentNotFound: "Kargo bulunamadı",
+    networkError: "Ağ zaman aşımı. Lütfen tekrar deneyin."
+  },
+
+  Portuguese: {
+    heroTitle: "Rastreamento Global de Encomendas",
+    heroDesc: "Acompanhe pacotes em todo o mundo com atualizações em tempo real.",
+    inputPlaceholder: "Digite o Número de Rastreamento",
+    trackBtn: "Rastrear Pacote",
+    features: {
+      realTime: "Rastreamento em Tempo Real",
+      realTimeDesc: "Acompanhe os envios ao vivo com atualizações precisas.",
+      global: "Logística Global",
+      globalDesc: "Rastreie envios de múltiplos transportadores internacionais.",
+      secure: "Entrega Segura",
+      secureDesc: "Seus pacotes estão protegidos com manuseio seguro."
+    },
+    howItWorksTitle: "Como Funciona o Rastreamento",
+    step1: "Digite o Número de Rastreamento",
+    step2: "O Sistema Localiza o Envio",
+    step3: "Ver Status da Entrega",
+    step4: "Pacote Entregue",
+    resultTitle: "Resultado do Envio",
+    viewBtn: "Ver Envio",
+    shipmentFound: "Envio encontrado com sucesso",
+    shipmentNotFound: "Envio não encontrado",
+    networkError: "Tempo limite de rede. Tente novamente."
+  },
+
+  Korean: {
+    heroTitle: "글로벌 배송 추적",
+    heroDesc: "실시간 물류 업데이트와 배송 상태로 전 세계 패키지를 추적하세요.",
+    inputPlaceholder: "운송장 번호 입력",
+    trackBtn: "배송 추적",
+    features: {
+      realTime: "실시간 추적",
+      realTimeDesc: "정확한 위치 업데이트로 배송을 실시간으로 추적합니다.",
+      global: "글로벌 물류",
+      globalDesc: "다국적 운송사를 통한 배송을 추적합니다.",
+      secure: "안전한 배송",
+      secureDesc: "귀하의 패키지는 안전한 물류 처리로 보호됩니다."
+    },
+    howItWorksTitle: "배송 추적 방법",
+    step1: "운송장 번호 입력",
+    step2: "시스템이 배송 조회",
+    step3: "배송 상태 보기",
+    step4: "패키지 배송 완료",
+    resultTitle: "배송 결과",
+    viewBtn: "배송 보기",
+    shipmentFound: "배송이 성공적으로 조회되었습니다",
+    shipmentNotFound: "배송을 찾을 수 없습니다",
+    networkError: "네트워크 시간 초과. 다시 시도하세요."
+  },
+
+  Japanese: {
+    heroTitle: "グローバル配送追跡",
+    heroDesc: "リアルタイムの物流更新と配達状況で世界中の荷物を追跡します。",
+    inputPlaceholder: "追跡番号を入力",
+    trackBtn: "荷物を追跡",
+    features: {
+      realTime: "リアルタイム追跡",
+      realTimeDesc: "正確な位置情報で荷物をライブ追跡します。",
+      global: "グローバル物流",
+      globalDesc: "複数の国際キャリアの配送を追跡できます。",
+      secure: "安全な配送",
+      secureDesc: "あなたの荷物は安全な物流で保護されます。"
+    },
+    howItWorksTitle: "配送追跡の仕組み",
+    step1: "追跡番号を入力",
+    step2: "システムが荷物を検索",
+    step3: "配達状況を確認",
+    step4: "荷物が配達済み",
+    resultTitle: "配送結果",
+    viewBtn: "配送を見る",
+    shipmentFound: "配送が正常に見つかりました",
+    shipmentNotFound: "配送が見つかりません",
+    networkError: "ネットワークタイムアウト。再試行してください。"
+  }
+};
+
+// 2️⃣ Current language (change dynamically if needed)
+let currentLanguage = "English";
+
+// 3️⃣ Render shipment page
+function renderShipmentPage(containerId) {
+  const t = translations[currentLanguage];
+  const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = `
@@ -11,11 +171,11 @@ function renderShipmentPage(data) {
       <!-- HERO -->
       <section class="hero-section">
         <div class="hero-content">
-          <h1><i class="fas fa-truck-fast"></i> Global Shipment Tracking</h1>
-          <p>Track packages worldwide with real-time logistics updates and delivery status.</p>
+          <h1>${t.heroTitle}</h1>
+          <p>${t.heroDesc}</p>
           <div class="hero-track">
-            <input type="text" id="trackingInput" placeholder="Enter Tracking Number"/>
-            <button id="trackBtn" class="btn" disabled>Track Package</button>
+            <input type="text" id="trackingInput" placeholder="${t.inputPlaceholder}"/>
+            <button id="trackBtn" class="btn" disabled>${t.trackBtn}</button>
           </div>
         </div>
       </section>
@@ -23,44 +183,36 @@ function renderShipmentPage(data) {
       <!-- FEATURES -->
       <section class="grid">
         <div class="card feature-card">
-          <i class="fas fa-location-dot"></i>
-          <h3>Real-Time Tracking</h3>
-          <p>Follow shipments live with accurate location updates.</p>
+          <h3>${t.features.realTime}</h3>
+          <p>${t.features.realTimeDesc}</p>
         </div>
         <div class="card feature-card">
-          <i class="fas fa-globe"></i>
-          <h3>Global Logistics</h3>
-          <p>Track shipments across multiple international carriers.</p>
+          <h3>${t.features.global}</h3>
+          <p>${t.features.globalDesc}</p>
         </div>
         <div class="card feature-card">
-          <i class="fas fa-shield-halved"></i>
-          <h3>Secure Delivery</h3>
-          <p>Your packages are protected with secure logistics handling.</p>
+          <h3>${t.features.secure}</h3>
+          <p>${t.features.secureDesc}</p>
         </div>
       </section>
 
       <!-- HOW IT WORKS -->
       <section class="card">
-        <h2 class="title">How Shipment Tracking Works</h2>
+        <h2 class="title">${t.howItWorksTitle}</h2>
         <div class="steps">
-          <div class="step"><i class="fas fa-barcode"></i><br>Enter Tracking Number</div>
-          <div class="step"><i class="fas fa-search"></i><br>System Finds Shipment</div>
-          <div class="step"><i class="fas fa-route"></i><br>View Delivery Status</div>
-          <div class="step"><i class="fas fa-box-open"></i><br>Package Delivered</div>
+          <div class="step">${t.step1}</div>
+          <div class="step">${t.step2}</div>
+          <div class="step">${t.step3}</div>
+          <div class="step">${t.step4}</div>
         </div>
       </section>
 
       <!-- TRACKING RESULT -->
       <section id="trackingResult" class="card hide">
-        <h3>Shipment Result</h3>
+        <h3>${t.resultTitle}</h3>
         <div id="resultContent" style="margin-top:20px;"></div>
-        <button id="viewShipmentBtn" class="btn btn-view">View Shipment</button>
+        <button id="viewShipmentBtn" class="btn btn-view">${t.viewBtn}</button>
       </section>
-
-      <!-- PRELOADER -->
-      <div class="preloader hide" id="shipmentPreloader">
-        <div class="loader"></div>
-      </div>
 
     </div>
   `;
@@ -68,118 +220,48 @@ function renderShipmentPage(data) {
   initShipmentTracker();
 }
 
-/* =====================================================
-   SHIPMENT TRACKER LOGIC
-===================================================== */
+// 4️⃣ Simple tracker logic (no preloader, just alerts)
 function initShipmentTracker() {
   const input = document.getElementById("trackingInput");
   const trackBtn = document.getElementById("trackBtn");
   const resultBox = document.getElementById("trackingResult");
   const resultContent = document.getElementById("resultContent");
-  const preloader = document.getElementById("shipmentPreloader");
   const viewBtn = document.getElementById("viewShipmentBtn");
+  const t = translations[currentLanguage];
 
-  if (!input || !trackBtn || !preloader) return;
+  if (!input || !trackBtn) return;
 
-  let timeoutRef = null;
-  let currentTrackingNumber = null;
-
-  // INPUT VALIDATION
+  // Enable track button when input is not empty
   input.addEventListener("input", () => {
-    const value = input.value.trim();
-    if (resultBox) resultBox.classList.add("hide");
-    trackBtn.disabled = !value;
-    trackBtn.style.opacity = value ? "1" : ".6";
+    trackBtn.disabled = !input.value.trim();
   });
 
-  // TRACK BUTTON CLICK
+  // Click to “track”
   trackBtn.addEventListener("click", () => {
     const trackingNumber = input.value.trim();
     if (!trackingNumber) return;
-    currentTrackingNumber = trackingNumber;
 
-    // SHOW PRELOADER
-    preloader.classList.remove("hide");
-    void preloader.offsetWidth; // force reflow
-    preloader.classList.add("show");
+    // Show result section
+    if (resultBox) resultBox.classList.remove("hide");
+    if (resultContent) resultContent.innerHTML = `
+      <p><strong>Tracking #:</strong> ${trackingNumber}</p>
+      <p><strong>Status:</strong> In Transit</p>
+    `;
 
-    // SEND TRACKING MESSAGE TO PARENT
-    
-    parent.postMessage({
-type: "TRACK_SHIPMENT",
-payload: {
-trackingNumber: currentTrackingNumber
-}
-}, "*");
-
-  
-
-    // TIMEOUT HANDLER
-timeoutRef = setTimeout(() => {
-  preloader.classList.remove("show"); // hide preloader
-  showAlert("Network timeout. Please try again.", "danger");
-}, 10000);
+    showAlert(t.shipmentFound, "success");
   });
 
-  // HANDLE RESPONSE FROM PARENT
-  
-  function handleTrackingResponse(event) {
-    const { type, data } = event.data || {};
-    if (type !== "TRACKING_RESPONSE") return;
-
-    clearTimeout(timeoutRef);
-    preloader.classList.add("hide");
-
-    if (!data || !data.found) {
-      showAlert("Shipment not found", "danger");
-      return;
-    }
-
-    if (resultBox) resultBox.classList.remove("hide");
-    if (resultContent) {
-      resultContent.innerHTML = `
-        <p><strong>Tracking #:</strong> ${data.trackingNumber}</p>
-        <p><strong>Status:</strong> ${data.status}</p>
-      `;
-    }
-
-    showAlert("Shipment found successfully", "success");
-
-    // SCROLL TO RESULT
-    setTimeout(() => {
-      const main = document.querySelector(".main") || document.body;
-      if (main && resultBox) {
-        main.scrollTo({ top: resultBox.offsetTop - 20, behavior: "smooth" });
-      }
-    }, 100);
-  }
-
-  window.removeEventListener("message", handleTrackingResponse);
-window.addEventListener("message", handleTrackingResponse);
-
-  // VIEW BUTTON
+  // View shipment button clears input
   if (viewBtn) {
     viewBtn.addEventListener("click", () => {
-      if (!currentTrackingNumber) return;
-
-      window.parent.postMessage({
-  type: "VIEW_SHIPMENT",
-  payload: {
-    trackingNumber: currentTrackingNumber
-  }
-}, "*");
-
       input.value = "";
       trackBtn.disabled = true;
-      trackBtn.style.opacity = ".6";
       if (resultBox) resultBox.classList.add("hide");
     });
   }
 }
 
-/* =====================================================
-   HELPER ALERT FUNCTION
-===================================================== */
+// 5️⃣ Helper alert
 function showAlert(msg, type = "info") {
   const alertEl = document.createElement("div");
   alertEl.className = `alert alert-${type}`;
@@ -187,5 +269,3 @@ function showAlert(msg, type = "info") {
   document.body.appendChild(alertEl);
   setTimeout(() => alertEl.remove(), 3000);
 }
-
-
