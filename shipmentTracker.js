@@ -1,5 +1,72 @@
 /* =====================================================
-   SHIPMENT TRACKER MODULE
+   RENDER SHIPMENT TRACKER
+===================================================== */
+
+function renderShipmentTracker(containerId){
+
+const container = document.getElementById(containerId);
+
+if(!container) return;
+
+container.innerHTML = `
+
+<div class="shipment-page">
+
+<section class="hero-section">
+<div class="hero-content">
+
+<h1>Global Shipment Tracking</h1>
+
+<p>
+Track packages worldwide with real-time logistics updates
+and delivery status.
+</p>
+
+<div class="hero-track">
+
+<input
+type="text"
+id="trackingInput"
+placeholder="Enter Tracking Number"
+/>
+
+<button id="trackBtn" class="btn" disabled>
+Track Package
+</button>
+
+</div>
+</div>
+</section>
+
+
+<section id="trackingResult" class="card hide">
+
+<h3>Shipment Result</h3>
+
+<div id="resultContent"></div>
+
+<button id="viewShipmentBtn" class="btn btn-view">
+View Shipment
+</button>
+
+</section>
+
+
+<div class="preloader hide" id="shipmentPreloader">
+<div class="loader"></div>
+</div>
+
+</div>
+
+`;
+
+initShipmentTracker();
+
+}
+
+
+/* =====================================================
+   SHIPMENT TRACKER LOGIC
 ===================================================== */
 
 let trackerMessageListenerRegistered = false;
@@ -18,10 +85,6 @@ trackerMessageListenerRegistered = true;
 
 }
 
-
-/* =====================================================
-   BIND UI EVENTS
-===================================================== */
 
 function bindTrackerUI(){
 
@@ -48,8 +111,6 @@ if(resultBox) resultBox.classList.add("hide");
 
 trackBtn.disabled = !value;
 
-trackBtn.style.opacity = value ? "1" : ".6";
-
 });
 
 
@@ -65,27 +126,19 @@ currentTrackingNumber = trackingNumber;
 
 preloader.classList.remove("hide");
 
-void preloader.offsetWidth;
-
 preloader.classList.add("show");
 
 
-parent.postMessage({
-
-type:"TRACK_SHIPMENT",
-
-payload:{
+sendMessage("TRACK_SHIPMENT",{
 trackingNumber
-}
-
-},"*");
+});
 
 
 timeoutRef = setTimeout(()=>{
 
 preloader.classList.remove("show");
 
-showAlert("Network timeout. Please try again.","danger");
+showAlert("Network timeout","danger");
 
 },10000);
 
@@ -100,24 +153,9 @@ viewBtn.addEventListener("click",()=>{
 
 if(!currentTrackingNumber) return;
 
-parent.postMessage({
-
-type:"VIEW_SHIPMENT",
-
-payload:{
+sendMessage("VIEW_SHIPMENT",{
 trackingNumber:currentTrackingNumber
-}
-
-},"*");
-
-
-input.value = "";
-
-trackBtn.disabled = true;
-
-trackBtn.style.opacity = ".6";
-
-if(resultBox) resultBox.classList.add("hide");
+});
 
 });
 
@@ -172,14 +210,14 @@ showAlert("Shipment found successfully","success");
 
 function showAlert(msg,type="info"){
 
-const alertEl = document.createElement("div");
+const alert = document.createElement("div");
 
-alertEl.className = `alert alert-${type}`;
+alert.className = `alert alert-${type}`;
 
-alertEl.innerText = msg;
+alert.innerText = msg;
 
-document.body.appendChild(alertEl);
+document.body.appendChild(alert);
 
-setTimeout(()=>alertEl.remove(),3000);
+setTimeout(()=>alert.remove(),3000);
 
 }
