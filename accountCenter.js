@@ -1,7 +1,7 @@
-/* =====================================================
+/* =====================================================.
    GLOBAL VARIABLES
 ===================================================== */
-window.memberData = {};
+window.memberData = JSON.parse(localStorage.getItem("memberSettings") || "{}");
 window.currentLanguage = localStorage.getItem("language") || "English";
 window.settingsVisible = false;
 
@@ -31,15 +31,10 @@ window.setLanguage = function(lang){
 /* =====================================================
    MEMBER DETAILS HANDLERS
 ===================================================== */
-
-/**
- * Update a field in memberData, supports nested paths like "membership.accessLevel"
- */
 window.updateMemberDetail = function(input){
   const field = input.dataset.field;
   const value = input.value;
 
-  // Support nested fields
   const keys = field.split(".");
   let obj = window.memberData;
   for(let i=0; i<keys.length-1; i++){
@@ -51,9 +46,6 @@ window.updateMemberDetail = function(input){
   console.log("Updated memberData:", window.memberData);
 };
 
-/**
- * Returns an array of member detail objects for rendering
- */
 window.getUserDetails = function(memberData){
   if (!memberData) return [];
 
@@ -63,15 +55,13 @@ window.getUserDetails = function(memberData){
     { label: "Phone", field: "phone" },
     { label: "First Name", field: "firstName" },
     { label: "Last Name", field: "lastName" },
-    { label: "Membership Tier", field: "membership.accessLevel" }, // nested example
+    { label: "Membership Tier", field: "membership.accessLevel" },
     { label: "Membership Type", field: "membership.accessType" },
   ].map(d => {
-    // Read nested fields safely
     const value = d.field.split('.').reduce((obj, key) => obj?.[key], memberData);
     return { ...d, value: value ?? "-" };
   });
 };
-
 
 /* =====================================================
    MEMBERSHIP CARD STYLES
@@ -180,7 +170,7 @@ window.renderProfileHead = function(member={}){
           <p>${email}</p>
           ${websiteHtml}
           <p><i class="fas fa-location-dot"></i> ${member.location||"—"}</p>
-          <p class="tier-badge"><i class="fas fa-crown"></i> ${member.membership||"Standard"}</p>
+          <p class="tier-badge"><i class="fas fa-crown"></i> ${member.membership?.accessLevel||"Standard"}</p>
         </div>
         <div class="profile-social-links">${socialLinksHtml}</div>
       </div>
@@ -255,15 +245,26 @@ window.renderAccountActions = function(){
 };
 
 /* =====================================================
-   SETTINGS PAGE RENDER
+   SETTINGS PAGE RENDER (FULL SAFE VERSION)
 ===================================================== */
 window.renderSettingsPageDynamic = function(pageData){
   const container = document.getElementById("app-view");
   if(!container) return;
 
-  let html = window.renderProfileHead(memberData);
-  html += window.renderMembershipCard(memberData);
-   html += window.SectionRegistry.details(userDetailsSection);
+  // Rebuild dynamic user details section
+  const userDetailsSection = {
+    title: "Member Details",
+    fields: window.getUserDetails(window.memberData)
+  };
+
+  let html = window.renderProfileHead(window.memberData);
+  html += window.renderMembershipCard(window.memberData);
+
+  // SectionRegistry call wrapped safely
+  if(window.SectionRegistry && typeof window.SectionRegistry.details === "function"){
+    html += window.SectionRegistry.details(userDetailsSection);
+  }
+
   html += window.renderAccountActions();
 
   if(window.settingsVisible){
