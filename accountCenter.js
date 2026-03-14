@@ -249,21 +249,22 @@ window.renderSettingsPageDynamic = function(pageData){
   if(!container) return;
 
   const lang = window.currentLanguage || "English";
+// Member details section
 
-  let html = window.renderProfileHead(window.memberData);
-  html += window.renderMembershipCard(window.memberData);
-
-  // Member details section
-  if(window.SectionRegistry?.details){
     const userDetailsSection = {
       type: "details",
       details: window.getUserDetails(window.memberData),
       editable: false
     };
-    html += window.SectionRegistry.details(userDetailsSection);
-  }
+  let html = window.renderProfileHead(window.memberData);
+  html += window.renderMembershipCard(window.memberData);
+
+  
+   
+  
 
   html += window.renderAccountActions();
+    html += window.SectionRegistry.details(userDetailsSection);
 
   // Other settings sections
   if(window.settingsVisible){
