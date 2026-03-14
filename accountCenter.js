@@ -253,16 +253,6 @@ window.renderSettingsPageDynamic = function(pageData){
   let html = window.renderProfileHead(window.memberData);
   html += window.renderMembershipCard(window.memberData);
 
-  // Member details section
-  if(window.SectionRegistry?.details){
-    const userDetailsSection = {
-      type: "details",
-      details: window.getUserDetails(window.memberData),
-      editable: false
-    };
-    html += window.SectionRegistry.details(userDetailsSection);
-  }
-
   html += window.renderAccountActions();
 
   // Other settings sections
