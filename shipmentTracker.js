@@ -1,25 +1,9 @@
-// 🌐 1️⃣ Current language (change dynamically)
+/* =====================================================
+   SHIPMENT TRACKER WITH TRANSLATION
+   Call renderShipmentPage("app-view")
+===================================================== */
 
-
-
-
-// 🌐 2️⃣ Translation helper
-function t(key) {
-  const lang = currentLanguage || "English";
-  return translations?.[lang]?.[key] || translations?.English?.[key] || key;
-}
-
-
-
-let currentLanguage = localStorage.getItem("language") || "English";
-
-// 🌐 2️⃣ Translation helper
-function t(key) {
-  const lang = currentLanguage || "English";
-  return translations?.[lang]?.[key] || translations?.English?.[key] || key;
-}
-
-// 🌐 3️⃣ Render shipment page
+// 1️⃣ Render shipment page
 function renderShipmentPage(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -42,16 +26,16 @@ function renderShipmentPage(containerId) {
       <!-- FEATURES -->
       <section class="grid">
         <div class="card feature-card">
-          <h3>${t("features_realTime")}</h3>
-          <p>${t("features_realTimeDesc")}</p>
+          <h3>${t("features.realTime")}</h3>
+          <p>${t("features.realTimeDesc")}</p>
         </div>
         <div class="card feature-card">
-          <h3>${t("features_global")}</h3>
-          <p>${t("features_globalDesc")}</p>
+          <h3>${t("features.global")}</h3>
+          <p>${t("features.globalDesc")}</p>
         </div>
         <div class="card feature-card">
-          <h3>${t("features_secure")}</h3>
-          <p>${t("features_secureDesc")}</p>
+          <h3>${t("features.secure")}</h3>
+          <p>${t("features.secureDesc")}</p>
         </div>
       </section>
 
@@ -79,7 +63,7 @@ function renderShipmentPage(containerId) {
   initShipmentTracker();
 }
 
-// 🌐 4️⃣ Simple tracker logic
+// 2️⃣ Simple tracker logic
 function initShipmentTracker() {
   const input = document.getElementById("trackingInput");
   const trackBtn = document.getElementById("trackBtn");
@@ -94,7 +78,7 @@ function initShipmentTracker() {
     trackBtn.disabled = !input.value.trim();
   });
 
-  // Click to “track”
+  // Click to track
   trackBtn.addEventListener("click", () => {
     const trackingNumber = input.value.trim();
     if (!trackingNumber) return;
@@ -118,7 +102,7 @@ function initShipmentTracker() {
   }
 }
 
-// 🌐 5️⃣ Helper alert
+// 3️⃣ Helper alert
 function showAlert(msg, type = "info") {
   const alertEl = document.createElement("div");
   alertEl.className = `alert alert-${type}`;
@@ -127,16 +111,22 @@ function showAlert(msg, type = "info") {
   setTimeout(() => alertEl.remove(), 3000);
 }
 
-// 🌐 6️⃣ Language switch listener
-const languageSelect = document.getElementById("languageSelect");
-if (languageSelect) {
-  languageSelect.value = currentLanguage;
-
-  languageSelect.addEventListener("change", e => {
+// 4️⃣ Re-render page when language changes
+if (document.getElementById("languageSelect")) {
+  document.getElementById("languageSelect").addEventListener("change", (e) => {
+    // currentLanguage is already declared in main HTML
     currentLanguage = e.target.value;
     localStorage.setItem("language", currentLanguage);
 
-    // Re-render the current page with new translations
+    // Re-render the shipment page
     renderShipmentPage("app-view");
   });
 }
+
+// Optional: listen for changes from other tabs
+window.addEventListener("storage", (e) => {
+  if (e.key === "language") {
+    currentLanguage = e.newValue;
+    renderShipmentPage("app-view");
+  }
+});
