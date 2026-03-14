@@ -9,7 +9,7 @@ function renderShipmentPage(data) {
       <section class="hero-section">
         <div class="hero-content">
           <h1><i class="fas fa-truck-fast"></i> ${t(heroTitle)}</h1>
-          <p>Track packages worldwide with real-time logistics updates and delivery status.</p>
+          <p>${t(heroDesc)}</p>
           <div class="hero-track">
             <input type="text" id="trackingInput" placeholder="Enter Tracking Number"/>
             <button id="trackBtn" class="btn" disabled>Track Package</button>
