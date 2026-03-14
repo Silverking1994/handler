@@ -1,7 +1,7 @@
 /* =====================================================
    GLOBAL VARIABLES
 ===================================================== */
-window.memberData = {};
+window.memberData = JSON.parse(localStorage.getItem("memberSettings")) || {};
 window.currentLanguage = localStorage.getItem("language") || "English";
 window.settingsVisible = false;
 
@@ -26,38 +26,6 @@ window.setLanguage = function(lang){
   localStorage.setItem("language", lang);
   if(window.buildNavigation) buildNavigation();
   if(window.navigate) navigate(currentPage);
-};
-
-/* =====================================================
-   MEMBER DETAILS HANDLERS
-===================================================== */
-window.updateMemberDetail = function(input){
-  const field = input.dataset.field;
-  const value = input.value;
-  const keys = field.split(".");
-  let obj = window.memberData;
-  for(let i=0; i<keys.length-1; i++){
-    if(!obj[keys[i]]) obj[keys[i]] = {};
-    obj = obj[keys[i]];
-  }
-  obj[keys[keys.length-1]] = value;
-  console.log("Updated memberData:", window.memberData);
-};
-
-window.getUserDetails = function(memberData){
-  if (!memberData) return [];
-  return [
-    { label: "Full Name", field: "name" },
-    { label: "Email", field: "email" },
-    { label: "Phone", field: "phone" },
-    { label: "First Name", field: "firstName" },
-    { label: "Last Name", field: "lastName" },
-    { label: "Membership Tier", field: "membership.accessLevel" },
-    { label: "Membership Type", field: "membership.accessType" },
-  ].map(d=>{
-    const value = d.field.split('.').reduce((obj, key)=> obj?.[key], memberData);
-    return {...d, value: value ?? "-"};
-  });
 };
 
 /* =====================================================
@@ -167,7 +135,7 @@ window.renderProfileHead = function(member={}){
           <p>${email}</p>
           ${websiteHtml}
           <p><i class="fas fa-location-dot"></i> ${member.location||"—"}</p>
-          <p class="tier-badge"><i class="fas fa-crown"></i> ${member.membership||"Standard"}</p>
+          <p class="tier-badge"><i class="fas fa-crown"></i> ${member.membership?.accessLevel||"Standard"}</p>
         </div>
         <div class="profile-social-links">${socialLinksHtml}</div>
       </div>
@@ -184,25 +152,25 @@ window.renderProfileHead = function(member={}){
 ===================================================== */
 window.renderUserSettingsField = function(field){
   const label = t(field.label || field.key);
-  const value = window.memberData[field.key] ?? "";
+  const value = field.value ?? window.memberData[field.key] ?? "";
 
   switch(field.type){
     case "select":
       return `<div class="setting-item">
         <label>${label}</label>
-        <select data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
+        <select data-field="${field.key}" oninput="updateMemberDetail(this)">
           ${field.options.map(o=>`<option value="${o}" ${value===o?"selected":""}>${o}</option>`).join("")}
         </select>
       </div>`;
     case "checkbox":
       return `<div class="setting-item"><label>
-        <input type="checkbox" data-key="${field.key}" ${value?"checked":""} onchange="fieldChangeHandler(event,'${field.key}')">
+        <input type="checkbox" data-field="${field.key}" ${value?"checked":""} oninput="updateMemberDetail(this)">
         ${label}
       </label></div>`;
     case "file":
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="file" data-key="${field.key}" onchange="previewFile(event,'${field.key}')">
+        <input type="file" data-field="${field.key}" onchange="previewFile(event,'${field.key}')">
         <img class="avatar-preview" src="${value||''}" style="width:60px;height:60px;border-radius:50%;margin-top:5px;">
       </div>`;
     case "button":
@@ -213,12 +181,12 @@ window.renderUserSettingsField = function(field){
     case "password":
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="password" value="" placeholder="Enter new password" data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
+        <input type="password" value="" placeholder="Enter new password" data-field="${field.key}" oninput="updateMemberDetail(this)">
       </div>`;
     default:
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="${field.type||"text"}" value="${value}" data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
+        <input type="${field.type||"text"}" value="${value}" data-field="${field.key}" oninput="updateMemberDetail(this)">
       </div>`;
   }
 };
@@ -242,59 +210,28 @@ window.renderAccountActions = function(){
 };
 
 /* =====================================================
-   RENDER SETTINGS PAGE
+   SETTINGS PAGE RENDER
 ===================================================== */
 window.renderSettingsPageDynamic = function(pageData){
   const container = document.getElementById("app-view");
   if(!container) return;
 
-  const lang = window.currentLanguage || "English";
-
   let html = window.renderProfileHead(window.memberData);
   html += window.renderMembershipCard(window.memberData);
-
-  // Member details section
-  if(window.SectionRegistry?.details){
-    const userDetailsSection = {
-      type: "details",
-      details: window.getUserDetails(window.memberData),
-      editable: false
-    };
-    html += window.SectionRegistry.details(userDetailsSection);
-  }
-
   html += window.renderAccountActions();
 
-  // Other settings sections
-  if(window.settingsVisible && pageData?.sections?.length){
-    html += `<h2 style="text-align:center;margin-top:10px;">
-      ${translations?.[lang]?.[pageData.title] || pageData.title}
-    </h2>`;
+  if(window.settingsVisible){
+    html += `<h2 style="text-align:center;margin-top:10px;">${t(pageData.title)}</h2>`;
     html += `<div class="settings-content">`;
-
-    const renderSection = (section) => {
-      let sectionHTML = `<div class="settings-section card">
-        <h3>${translations?.[lang]?.[section.title] || section.title}</h3>
+    pageData.sections?.forEach(sec=>{
+      html += `<div class="settings-section card">
+        <h3>${t(sec.title)}</h3>
         <div class="settings-grid">
-          ${section.fields.map(f => window.renderUserSettingsField(f)).join("")}
-        </div>`;
-      if(section.subsections?.length){
-        sectionHTML += section.subsections.map(sub=>`
-          <div class="settings-subsection card">
-            <h4>${translations?.[lang]?.[sub.title] || sub.title}</h4>
-            <div class="settings-grid">
-              ${sub.fields.map(f=>window.renderUserSettingsField(f)).join("")}
-            </div>
-          </div>`).join("");
-      }
-      sectionHTML += `</div>`;
-      return sectionHTML;
-    };
-
-    html += pageData.sections.map(renderSection).join("");
-    html += `<button class="save-btn" onclick="window.saveSettingsDynamic()">
-      ${translations?.[lang]?.saveChanges || "Save Changes"}
-    </button>`;
+          ${sec.fields.map(f=>window.renderUserSettingsField(f)).join("")}
+        </div>
+      </div>`;
+    });
+    html += `<button class="save-btn" onclick="saveSettingsDynamic()">${t("saveChanges")}</button>`;
     html += `</div>`;
   }
 
@@ -304,9 +241,19 @@ window.renderSettingsPageDynamic = function(pageData){
 /* =====================================================
    FIELD HANDLERS
 ===================================================== */
-window.fieldChangeHandler = function(e,key){
-  const val = e.target.type==="checkbox" ? e.target.checked : e.target.value;
-  window.memberData[key] = val;
+window.updateMemberDetail = function(input){
+  const field = input.dataset.field;
+  let val = input.type==="checkbox" ? input.checked : input.value;
+
+  // Support nested fields like membership.accessLevel
+  const keys = field.split(".");
+  let obj = window.memberData;
+  for(let i=0; i<keys.length-1; i++){
+    if(!obj[keys[i]]) obj[keys[i]] = {};
+    obj = obj[keys[i]];
+  }
+  obj[keys[keys.length-1]] = val;
+  console.log("Updated memberData:", window.memberData);
 };
 
 window.previewFile = function(e,key){
@@ -325,10 +272,10 @@ window.saveSettingsDynamic = function(){
   try{
     localStorage.setItem("memberSettings", JSON.stringify(window.memberData));
     window.parent.postMessage({ type:"UPDATE_MEMBER_SETTINGS", payload: window.memberData }, "*");
-    window.showGlobalAlert("Settings saved!", "success");
+    showGlobalAlert("Settings saved!", "success");
   } catch(err){
     console.error(err);
-    window.showGlobalAlert("Failed to save settings", "danger");
+    showGlobalAlert("Failed to save settings", "danger");
   }
   window.renderSettingsPageDynamic(settingsPageData);
 };
@@ -372,4 +319,23 @@ document.addEventListener("mouseleave", ()=>{
 window.toggleSettings = function(){
   window.settingsVisible = !window.settingsVisible;
   window.renderSettingsPageDynamic(settingsPageData);
+};
+
+/* =====================================================
+   MEMBER DETAILS UTILITY
+===================================================== */
+window.getUserDetails = function(memberData){
+  if (!memberData) return [];
+  return [
+    { label: "Full Name", field: "name" },
+    { label: "Email", field: "email" },
+    { label: "Phone", field: "phone" },
+    { label: "First Name", field: "firstName" },
+    { label: "Last Name", field: "lastName" },
+    { label: "Membership Tier", field: "membership.accessLevel" },
+    { label: "Membership Type", field: "membership.accessType" },
+  ].map(d=>{
+    const value = d.field.split('.').reduce((obj, key)=>obj?.[key], memberData);
+    return {...d, value: value ?? "-"};
+  });
 };
