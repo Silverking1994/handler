@@ -1,32 +1,12 @@
 /* =====================================================
    GLOBAL VARIABLES
 ===================================================== */
-window.memberData = {};
-window.currentLanguage = localStorage.getItem("language") || "English";
-window.settingsVisible = false;
+
 
 /* =====================================================
    TRANSLATION FUNCTIONS
 ===================================================== */
-window.t = function(key){
-  const lang = window.currentLanguage || "English";
-  return translations?.[lang]?.[key] || translations?.English?.[key] || key;
-};
 
-window.applyTranslations = function(scope=document){
-  const lang = window.currentLanguage || "English";
-  scope.querySelectorAll("[data-i18n]").forEach(el=>{
-    const key = el.dataset.i18n;
-    el.innerText = translations?.[lang]?.[key] || translations?.English?.[key] || key;
-  });
-};
-
-window.setLanguage = function(lang){
-  window.currentLanguage = lang;
-  localStorage.setItem("language", lang);
-  if(window.buildNavigation) buildNavigation();
-  if(window.navigate) navigate(currentPage);
-};
 
 /* =====================================================
    MEMBERSHIP CARD STYLES
