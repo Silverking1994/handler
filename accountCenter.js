@@ -147,6 +147,38 @@ window.renderProfileHead = function(member={}){
     </div>`;
 };
 
+
+window.updateMemberDetail = function(input){
+  const field = input.dataset.field;
+  const value = input.value;
+  const keys = field.split(".");
+  let obj = window.memberData;
+  for(let i=0; i<keys.length-1; i++){
+    if(!obj[keys[i]]) obj[keys[i]] = {};
+    obj = obj[keys[i]];
+  }
+  obj[keys[keys.length-1]] = value;
+  console.log("Updated memberData:", window.memberData);
+};
+
+window.getUserDetails = function(memberData){
+  if (!memberData) return [];
+  return [
+    { label: "Full Name", field: "name" },
+    { label: "Email", field: "email" },
+    { label: "Phone", field: "phone" },
+    { label: "First Name", field: "firstName" },
+    { label: "Last Name", field: "lastName" },
+    { label: "Membership Tier", field: "membership.accessLevel" },
+    { label: "Membership Type", field: "membership.accessType" },
+  ].map(d=>{
+    const value = d.field.split('.').reduce((obj, key)=> obj?.[key], memberData);
+    return {...d, value: value ?? "-"};
+  });
+};
+
+
+
 /* =====================================================
    USER SETTINGS FIELD RENDER
 ===================================================== */
@@ -215,10 +247,17 @@ window.renderAccountActions = function(){
 window.renderSettingsPageDynamic = function(pageData){
   const container = document.getElementById("app-view");
   if(!container) return;
+     const userDetailsSection = {
+      type: "details",
+      details: window.getUserDetails(window.memberData),
+      editable: false
+    };
+    
 
   let html = window.renderProfileHead(memberData);
   html += window.renderMembershipCard(memberData);
   html += window.renderAccountActions();
+   html += window.SectionRegistry.details(userDetailsSection);
 
   if(window.settingsVisible){
     html += `<h2 style="text-align:center;margin-top:10px;">${t(pageData.title)}</h2>`;
