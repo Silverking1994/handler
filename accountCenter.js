@@ -1,7 +1,7 @@
-/* =====================================================
+/* =====================================================.
    GLOBAL VARIABLES
 ===================================================== */
-window.memberData = JSON.parse(localStorage.getItem("memberSettings")) || {};
+window.memberData = JSON.parse(localStorage.getItem("memberSettings") || "{}");
 window.currentLanguage = localStorage.getItem("language") || "English";
 window.settingsVisible = false;
 
@@ -26,6 +26,41 @@ window.setLanguage = function(lang){
   localStorage.setItem("language", lang);
   if(window.buildNavigation) buildNavigation();
   if(window.navigate) navigate(currentPage);
+};
+
+/* =====================================================
+   MEMBER DETAILS HANDLERS
+===================================================== */
+window.updateMemberDetail = function(input){
+  const field = input.dataset.field;
+  const value = input.value;
+
+  const keys = field.split(".");
+  let obj = window.memberData;
+  for(let i=0; i<keys.length-1; i++){
+    if(!obj[keys[i]]) obj[keys[i]] = {};
+    obj = obj[keys[i]];
+  }
+  obj[keys[keys.length-1]] = value;
+
+  console.log("Updated memberData:", window.memberData);
+};
+
+window.getUserDetails = function(memberData){
+  if (!memberData) return [];
+
+  return [
+    { label: "Full Name", field: "name" },
+    { label: "Email", field: "email" },
+    { label: "Phone", field: "phone" },
+    { label: "First Name", field: "firstName" },
+    { label: "Last Name", field: "lastName" },
+    { label: "Membership Tier", field: "membership.accessLevel" },
+    { label: "Membership Type", field: "membership.accessType" },
+  ].map(d => {
+    const value = d.field.split('.').reduce((obj, key) => obj?.[key], memberData);
+    return { ...d, value: value ?? "-" };
+  });
 };
 
 /* =====================================================
@@ -152,25 +187,25 @@ window.renderProfileHead = function(member={}){
 ===================================================== */
 window.renderUserSettingsField = function(field){
   const label = t(field.label || field.key);
-  const value = field.value ?? window.memberData[field.key] ?? "";
+  const value = memberData[field.key] ?? "";
 
   switch(field.type){
     case "select":
       return `<div class="setting-item">
         <label>${label}</label>
-        <select data-field="${field.key}" oninput="updateMemberDetail(this)">
+        <select data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
           ${field.options.map(o=>`<option value="${o}" ${value===o?"selected":""}>${o}</option>`).join("")}
         </select>
       </div>`;
     case "checkbox":
       return `<div class="setting-item"><label>
-        <input type="checkbox" data-field="${field.key}" ${value?"checked":""} oninput="updateMemberDetail(this)">
+        <input type="checkbox" data-key="${field.key}" ${value?"checked":""} onchange="fieldChangeHandler(event,'${field.key}')">
         ${label}
       </label></div>`;
     case "file":
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="file" data-field="${field.key}" onchange="previewFile(event,'${field.key}')">
+        <input type="file" data-key="${field.key}" onchange="previewFile(event,'${field.key}')">
         <img class="avatar-preview" src="${value||''}" style="width:60px;height:60px;border-radius:50%;margin-top:5px;">
       </div>`;
     case "button":
@@ -181,12 +216,12 @@ window.renderUserSettingsField = function(field){
     case "password":
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="password" value="" placeholder="Enter new password" data-field="${field.key}" oninput="updateMemberDetail(this)">
+        <input type="password" value="" placeholder="Enter new password" data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
       </div>`;
     default:
       return `<div class="setting-item">
         <label>${label}</label>
-        <input type="${field.type||"text"}" value="${value}" data-field="${field.key}" oninput="updateMemberDetail(this)">
+        <input type="${field.type||"text"}" value="${value}" data-key="${field.key}" onchange="fieldChangeHandler(event,'${field.key}')">
       </div>`;
   }
 };
@@ -210,14 +245,26 @@ window.renderAccountActions = function(){
 };
 
 /* =====================================================
-   SETTINGS PAGE RENDER
+   SETTINGS PAGE RENDER (FULL SAFE VERSION)
 ===================================================== */
 window.renderSettingsPageDynamic = function(pageData){
   const container = document.getElementById("app-view");
   if(!container) return;
 
+  // Rebuild dynamic user details section
+  const userDetailsSection = {
+    title: "Member Details",
+    fields: window.getUserDetails(window.memberData)
+  };
+
   let html = window.renderProfileHead(window.memberData);
   html += window.renderMembershipCard(window.memberData);
+
+  // SectionRegistry call wrapped safely
+  if(window.SectionRegistry && typeof window.SectionRegistry.details === "function"){
+    html += window.SectionRegistry.details(userDetailsSection);
+  }
+
   html += window.renderAccountActions();
 
   if(window.settingsVisible){
@@ -241,19 +288,9 @@ window.renderSettingsPageDynamic = function(pageData){
 /* =====================================================
    FIELD HANDLERS
 ===================================================== */
-window.updateMemberDetail = function(input){
-  const field = input.dataset.field;
-  let val = input.type==="checkbox" ? input.checked : input.value;
-
-  // Support nested fields like membership.accessLevel
-  const keys = field.split(".");
-  let obj = window.memberData;
-  for(let i=0; i<keys.length-1; i++){
-    if(!obj[keys[i]]) obj[keys[i]] = {};
-    obj = obj[keys[i]];
-  }
-  obj[keys[keys.length-1]] = val;
-  console.log("Updated memberData:", window.memberData);
+window.fieldChangeHandler = function(e,key){
+  let val = e.target.type==="checkbox" ? e.target.checked : e.target.value;
+  memberData[key] = val;
 };
 
 window.previewFile = function(e,key){
@@ -261,7 +298,7 @@ window.previewFile = function(e,key){
   if(!file) return;
   const reader = new FileReader();
   reader.onload = function(ev){
-    window.memberData[key] = ev.target.result;
+    memberData[key] = ev.target.result;
     const preview = document.querySelector("img.avatar-preview");
     if(preview) preview.src = ev.target.result;
   };
@@ -270,8 +307,8 @@ window.previewFile = function(e,key){
 
 window.saveSettingsDynamic = function(){
   try{
-    localStorage.setItem("memberSettings", JSON.stringify(window.memberData));
-    window.parent.postMessage({ type:"UPDATE_MEMBER_SETTINGS", payload: window.memberData }, "*");
+    localStorage.setItem("memberSettings", JSON.stringify(memberData));
+    window.parent.postMessage({ type:"UPDATE_MEMBER_SETTINGS", payload: memberData }, "*");
     showGlobalAlert("Settings saved!", "success");
   } catch(err){
     console.error(err);
@@ -319,23 +356,4 @@ document.addEventListener("mouseleave", ()=>{
 window.toggleSettings = function(){
   window.settingsVisible = !window.settingsVisible;
   window.renderSettingsPageDynamic(settingsPageData);
-};
-
-/* =====================================================
-   MEMBER DETAILS UTILITY
-===================================================== */
-window.getUserDetails = function(memberData){
-  if (!memberData) return [];
-  return [
-    { label: "Full Name", field: "name" },
-    { label: "Email", field: "email" },
-    { label: "Phone", field: "phone" },
-    { label: "First Name", field: "firstName" },
-    { label: "Last Name", field: "lastName" },
-    { label: "Membership Tier", field: "membership.accessLevel" },
-    { label: "Membership Type", field: "membership.accessType" },
-  ].map(d=>{
-    const value = d.field.split('.').reduce((obj, key)=>obj?.[key], memberData);
-    return {...d, value: value ?? "-"};
-  });
 };
