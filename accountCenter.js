@@ -263,7 +263,7 @@ window.renderSettingsPageDynamic = function(pageData){
 
   let html = window.renderProfileHead(memberData);
   html += window.renderMembershipCard(memberData);
-   html += SectionRegistry.details(userDetailsSection);
+   html += window.SectionRegistry.details(userDetailsSection);
   html += window.renderAccountActions();
 
   if(window.settingsVisible){
