@@ -1,0 +1,2305 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<title>Creativia Premium Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;transition:all .3s}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+
+
+  margin: 0;
+
+  font-family: sans-serif;
+
+  min-height: 100vh;
+
+  overflow-y: scroll;
+
+color:white;
+background:linear-gradient(135deg,#0f0f1a,#1c1c2e);
+}
+
+
+.glass{width:100%;max-width:600px;backdrop-filter:blur(20px);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:25px;padding:40px;position:relative;transition:.4s;overflow:hidden;}
+.progress{position:absolute;top:0;left:0;height:4px;background:linear-gradient(90deg,#00f0ff,#ff00c8);transition:.4s;}
+h2{margin-bottom:25px;font-weight:600;animation:fadeIn .3s ease;}
+.field{position:relative;margin-bottom:25px;animation:fadeIn .3s ease;}
+
+
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.2);
+  background:transparent;
+  color:inherit;
+  transition:.3s;
+}
+
+input:focus+label,input:not(:placeholder-shown)+label{top:-8px;font-size:12px;}
+
+label{position:absolute;top:14px;left:14px;font-size:14px;opacity:.6;transition:.3s;pointer-events:none;}
+.options{display:flex;gap:10px;flex-wrap:wrap;animation:fadeIn .3s ease;}
+.option{padding:10px 15px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.3s;transform:scale(1);}
+.option:hover{transform:scale(1.05);}
+.option.selected{background:linear-gradient(90deg,#00f0ff,#ff00c8);color:black;border:none;}
+.nav{display:flex;justify-content:space-between;margin-top:20px;}
+button{padding:10px 20px;border-radius:20px;border:none;background:linear-gradient(90deg,#00f0ff,#ff00c8);cursor:pointer;font-weight:600;transition:transform .2s; color:#fff}
+button:hover{transform:scale(1.05);}
+.error{color:#ff6b6b;font-size:13px;margin-top:-15px;margin-bottom:15px;}
+.successScreen{text-align:center;animation:fadeIn .6s ease;}
+@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.spinner{border:4px solid rgba(255,255,255,.2);border-top:4px solid #00f0ff;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto;}
+@keyframes spin{to{transform:rotate(360deg)}}
+#themeToggle{position:absolute;top:10px;right:10px;cursor:pointer;padding:6px 12px;border-radius:12px;background:rgba(255,255,255,0.1);}
+#profileMeter{height:6px;width:100%;background:rgba(255,255,255,.2);border-radius:3px;margin-bottom:15px;overflow:hidden;}
+#profileMeterInner{height:100%;width:0%;background:linear-gradient(90deg,#00f0ff,#ff00c8);transition:width .6s;}
+#aiHint{opacity:.7;font-size:13px;margin-top:5px;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(500px) rotate(720deg);opacity:0}}
+.confetti{position:absolute;width:10px;height:10px;background:#00f0ff;animation:confettiFall 2s linear forwards;}
+
+#languageSelect{position:absolute;top:10px;left:10px;padding:6px 12px;border-radius:12px;background:rgba(255,255,255,0.1);color:gray;border:none;cursor:pointer;}
+body.light{background:linear-gradient(135deg,#f0f0f5,#e0e0ff);color:#111;}
+body.light .glass{background:rgba(255,255,255,0.3);border:1px solid rgba(0,0,0,0.1);}
+body.light input,body.light select,body.light textarea{color:#111;}
+body.light #aiHint{color:#111;}
+body.light .assistant-bubble{background:rgba(0,0,0,0.05);color:#111;border:1px solid rgba(0,0,0,0.1);}
+body.light .assistant-bubble::after{border-color:transparent rgba(0,0,0,0.1) transparent transparent;}
+body.light .typing-dots{color:#111;}
+body.dark{background:linear-gradient(135deg,#0f0f1a,#1c1c2e);color:white;}
+
+input, select, textarea {
+  font-size: 16px;
+}
+input {
+  font-size: 16px; /* prevents zoom */
+  padding: 14px;
+}
+label {
+  font-size: 14px;
+}
+
+body.dark input{
+  color:white;
+}
+
+body.light input{
+  color:#111;
+}
+input::placeholder{
+  opacity:0.6;
+}
+
+body.dark input::placeholder{
+  color:#aaa;
+}
+
+body.light input::placeholder{
+  color:#666;
+}
+
+.checkmark {
+  width: 100px;
+  height: 100px;
+  stroke-width: 4;
+  stroke: #4BB543;
+  stroke-miterlimit: 10;
+  margin: 0 auto 20px auto;
+  display: block;
+  animation: scaleIn 0.5s ease forwards;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 4;
+  stroke-miterlimit: 10;
+  stroke: #4BB543;
+  fill: none;
+  animation: strokeCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: strokeCheck 0.4s 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+  animation: fadeIn .3s ease;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  text-align: center;
+  transition: all .3s ease;
+  background: rgba(255,255,255,0.05);
+  color: white;
+  font-weight: 500;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg,#00f0ff,#ff00c8);
+  color: black;
+}
+
+.card.selected {
+  background: linear-gradient(90deg,#00f0ff,#ff00c8);
+  color: black;
+  border: none;
+}
+
+.assistant {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+ text-align: center;
+  transition: all .3s ease;
+  animation:fadeIn .5s ease;
+  z-index:500;
+  position:fixed;
+  top: 95px;
+  right:20px;
+  transition:
+    top 0.45s cubic-bezier(.2,.8,.2,1),
+    left 0.45s cubic-bezier(.2,.8,.2,1),
+    bottom 0.45s cubic-bezier(.2,.8,.2,1),
+    right 0.45s cubic-bezier(.2,.8,.2,1);
+    
+}
+
+
+.assistant-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  object-fit: cover;
+}
+.assistant-bubble {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  padding: 12px 18px;
+  border-radius: 18px;
+  max-width: 70%;
+  font-size: 14px;
+  color: black;
+  position: relative;
+}
+.assistant-bubble::after {
+  content:'';
+  position:absolute;
+  left:-8px; top:12px;
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent rgba(255,255,255,0.1) transparent transparent;
+}
+
+.typing-dots {
+  display: inline-block;
+  margin-left: 5px;
+  animation: blinkDots 1s infinite;
+  opacity: 0.7;
+}
+@keyframes blinkDots {
+  0%, 20% {opacity:0;}
+  50% {opacity:1;}
+  100% {opacity:0;}
+}
+
+body.light .assistant-bubble {
+  background: rgba(0,0,0,0.05);
+  color: #111;
+  border:1px solid rgba(0,0,0,0.1);
+}
+@keyframes strokeCircle {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes strokeCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.assistant{
+  position:absolute;
+  right:0;
+  top:80px;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  transition:all 0.5s ease;
+  z-index:9999;
+}
+
+.assistant-avatar{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+
+.assistant-bubble{
+  background:white;
+  padding:12px 16px;
+  border-radius:14px;
+  max-width:260px;
+  font-size:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+.assistant{
+  transition:
+  top 0.5s ease,
+  left 0.5s ease,
+  transform 0.3s ease;
+}
+
+.assistant.talking .assistant-avatar{
+  animation:assistantTalk 0.6s infinite alternate;
+}
+
+@keyframes assistantTalk{
+  from{ transform:translateY(0px); }
+  to{ transform:translateY(-4px); }
+}
+.metaContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+  background: #f9f9f9;
+  padding: 0 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.metaContent.show {
+  max-height: 500px; /* large enough for content */
+  padding: 10px;
+}
+
+.toggleMetaBtn {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+
+.toggleMetaBtn:hover {
+  background: #2980b9;
+}
+
+
+
+.nav {
+
+  position: sticky;
+  bottom: 0;
+
+  display: flex;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 40px;
+
+}
+/* ==============================
+   ASSISTANT POSITION
+============================== */
+
+
+/* ==============================
+   COLLAPSED STATE
+============================== */
+
+.assistant.collapsed{
+
+  right:-45px;
+
+}
+
+.assistant.collapsed .assistant-bubble{
+
+  display:none;
+
+}
+
+.assistant-avatar{
+
+  width:64px;
+  height:64px;
+
+  cursor:pointer;
+
+  user-select:none;
+
+}
+/* ==============================
+   COLLAPSED STATE
+============================== */
+
+.assistant.collapsed{
+
+  right:-45px;
+
+}
+
+.assistant.collapsed .assistant-bubble{
+
+  display:none;
+
+}
+</style>
+
+</head>
+<body>
+ 
+ <select id="languageSelect">
+  <option value="en">English</option>
+  <option value="es">Español</option>
+  <option value="fr">Français</option>
+  <option value="tr">Türkçe</option>
+  <option value="ko">한국어</option>
+  <option value="ja">日本語</option>
+</select>
+
+<div id="themeToggle">🌗 Toggle Theme</div>
+  
+  
+  <div id="assistant" class="assistant">
+
+  <img
+    id="alitaHead"
+    src="https://static.wixstatic.com/media/6f9344_7f6ead5ebb244e63bcabd82d6cf833d2~mv2.png"
+    alt="AI Assistant"
+    class="assistant-avatar"
+    onclick="toggleAlita()"
+  />
+
+  <div class="assistant-bubble" id="assistantBubble">
+    <span id="assistantText">Hi! I’m here to guide you 👋</span>
+    <span class="typing-dots" id="typingDots">•••</span>
+  </div>
+
+</div>
+
+
+
+<div class="glass">
+
+
+  <div class="progress" id="progress"></div>
+  
+  <div id="profileMeter"><div id="profileMeterInner"></div></div>
+  <div id="content"></div>
+</div>
+
+
+
+<script>
+
+
+/* =====================================
+   LANGUAGE STATE
+===================================== */
+
+let LANG = localStorage.getItem("alitaLang") || "en";
+
+function setLang(lang){
+
+  LANG = lang;
+
+  localStorage.setItem("alitaLang", lang);
+
+  render();
+
+}
+
+
+/* =====================================
+   TRANSLATION FUNCTION
+===================================== */
+
+function t(key){
+
+  if(
+    TRANSLATIONS[LANG] &&
+    TRANSLATIONS[LANG][key]
+  ){
+    return TRANSLATIONS[LANG][key];
+  }
+
+  if(TRANSLATIONS["en"][key]){
+    return TRANSLATIONS["en"][key];
+  }
+
+  return key;
+
+}
+
+/* =====================================
+   TEST DATA (STATIC INVITE + FLOW)
+===================================== */
+
+const AlitaPrompts = {
+
+  intro: [
+    "Hi, I'm Alita. I'll guide you through this onboarding.",
+    "Welcome. Let's complete your registration."
+  ],
+
+  name: [
+    "First, tell me your name."
+  ],
+
+  email: [
+    "Now enter your email address."
+  ],
+
+  favorite_member: [
+    "Choose your favorite member."
+  ],
+
+  goal: [
+    "Tell us what you want to achieve."
+  ],
+
+  next: [
+    "Great, let's continue."
+  ],
+
+  back: [
+    "Let's review this step again."
+  ],
+
+  submit: [
+    "Submitting your information..."
+  ],
+
+  success: [
+    "Perfect. Your onboarding is complete."
+  ],
+
+  error: [
+    "Something went wrong. Please try again."
+  ],
+  
+  default:[
+    "Let's continue.",
+    "Choose the option that fits you best.",
+    "Take your time."
+  ],
+
+};
+
+
+
+const AlitaTestData = {
+
+  
+ 
+
+  flow: [
+
+    {
+      id:"name",
+      label:"What should we call you?",
+      type:"text",
+      database:"fan_name",
+      required:true
+    },
+
+    {
+      id:"email",
+      label:"Your email address",
+      type:"email",
+      database:"email_address",
+      required:true
+    },
+
+    {
+      id:"country",
+      label:"Where are you joining from?",
+      type:"text",
+      database:"country"
+    },
+
+    {
+      id:"army_since",
+      label:"When did you become ARMY?",
+      type:"select",
+      database:"army_since",
+
+      options:[
+        "Before 2016",
+        "2016–2018",
+        "2019–2020",
+        "2021–2022",
+        "Recently joined"
+      ]
+    },
+
+    {
+      id:"favorite_member",
+      type:"cards",
+      label:"Choose your BTS bias",
+      database:"favorite_member",
+
+      options:[
+        {label:"RM",icon:"🎤"},
+        {label:"Jin",icon:"🌙"},
+        {label:"Suga",icon:"🔥"},
+        {label:"J-Hope",icon:"☀️"},
+        {label:"Jimin",icon:"💜"},
+        {label:"V",icon:"🎨"},
+        {label:"Jungkook",icon:"⭐"}
+      ]
+    },
+    
+  {id:"maritalStatus",label:"Marital Status",type:"radio",options:["Single","Married","Divorced","Widowed"],database:"marital_status",required:true},
+    
+     {id:"interests", label:"Select your interests", type:"multi",skip:true, options:["UI/UX","Web Dev","Content","Marketing","AI"], database:"interests"},
+     
+     
+    {
+        id:"path",
+type:"cards",
+label:"Choose your path",
+field:"role",
+options:[
+{label:"Creator",icon:"🎨"},
+{label:"Developer",icon:"💻"},
+{label:"Entrepreneur",icon:"🚀"},
+{label:"AI Explorer",icon:"🤖"}
+]
+},
+        {
+          id: "fan_interests",
+
+          type: "multi",
+
+          label: "Choose what you love about BTS",
+
+          database: "fan_interests",
+
+          options: [
+
+            "Music",
+            "Dance performances",
+            "Lyrics and storytelling",
+            "Fan community projects",
+            "Concerts and events",
+            "Behind-the-scenes content"
+
+          ]
+
+        },
+
+   
+    
+ {id:"primaryGoal", label:"What’s your main goal on Creativia?", type:"radio", options:["Build personal brand","Find clients","Collaborate","Learn skills","Monetize content"],
+  database:"primary_goal", required:true
+  },
+
+
+  ]
+
+};
+let alitaJustReacted = false;
+
+
+let visibleFields = [];
+
+
+function initializeAlita(){
+
+  console.log("🚀 Alita Test Mode Started");
+
+  flow = AlitaTestData.flow;
+
+  step = 0;
+  data = {};
+
+  localStorage.removeItem("multiPhaseData");
+
+  render();
+
+}
+
+let assistantDefaultPosition = {
+  bottom: "140px",
+  right: "20px"
+};
+
+/* ==============================
+   AI ASSISTANT CONTROLLER
+============================== */
+
+const AssistantController = {
+
+  state: "home",
+  home: { top: "25px", right: "25px" },
+
+  moveToField(field){
+
+    const assistant = document.querySelector(".assistant");
+    const rect = field.getBoundingClientRect();
+
+    assistant.style.top = rect.top + window.scrollY - 20 + "px";
+    assistant.style.left = rect.left + window.scrollX - 280 + "px";
+
+    assistant.style.bottom = "auto";
+    assistant.style.right = "auto";
+
+    this.state = "follow";
+
+  },
+
+  goHome(){
+
+    const assistant = document.querySelector(".assistant");
+
+    assistant.style.bottom = "auto";
+    assistant.style.left = "auto";
+
+    assistant.style.top = this.home.top;
+    assistant.style.right = this.home.right;
+
+    this.state = "home";
+
+  }
+
+};
+
+
+
+/* =====================================
+   ALITA COLLAPSE / EXPAND
+===================================== */
+
+let alitaCollapsed = false;
+
+function toggleAlita(){
+
+  const assistant = document.getElementById("assistant");
+
+  alitaCollapsed = !alitaCollapsed;
+
+  if(alitaCollapsed){
+
+    assistant.classList.add("collapsed");
+
+  }else{
+
+    assistant.classList.remove("collapsed");
+
+  }
+
+}
+
+// THEME
+let theme = localStorage.getItem("theme")||"dark";
+applyTheme();
+document.getElementById("themeToggle").addEventListener("click", ()=>{
+  theme = theme==="dark"?"light":"dark";
+  localStorage.setItem("theme", theme);
+  applyTheme();
+});
+
+
+
+
+function applyTheme(){
+  const glass = document.querySelector(".glass");
+  const inputs = document.querySelectorAll("input, select");
+  
+   const body = document.body;
+
+  body.classList.remove("light","dark");
+  body.classList.add(theme);
+  
+  
+
+inputs.forEach(input=>{
+
+  input.addEventListener("focus",()=>{
+
+    moveAssistantToField(input);
+
+  });
+
+  input.addEventListener("blur",()=>{
+
+    setTimeout(()=>{
+      resetAssistantPosition();
+    },300);
+
+  });
+
+});
+
+
+  if(theme === "light"){
+    body.style.background = "linear-gradient(135deg,#f0f0f5,#e0e0ff)";
+    body.style.color = "#111";
+    glass.style.background = "rgba(255,255,255,0.3)";
+    glass.style.border = "1px solid rgba(0,0,0,0.1)";
+    // Update all inputs to dark text
+    inputs.forEach(input => input.style.color = "black");
+  } else {
+    body.style.background = "linear-gradient(135deg,#0f0f1a,#1c1c2e)";
+    body.style.color = "white";
+    glass.style.background = "rgba(255,255,255,0.06)";
+    glass.style.border = "1px solid rgba(255,255,255,0.1)";
+    // Update all inputs to light text
+    inputs.forEach(input => input.style.color = "white");
+  }
+}
+
+
+
+// FIELDS CONFIG
+const onboardingFields=[
+
+  {id:"name",label:"What’s your name?",type:"text",database:"full_name",required:true,validation:{min:2}},
+  {id:"email",label:"Enter your email",type:"email",database:"email_address",required:true,validation:{email:true}},
+  {id:"age",label:"How old are you?",type:"number",database:"age",required:true,validation:{min:13}},
+  {
+id:"path",
+type:"cards",
+label:"Choose your path",
+field:"role",
+options:[
+{label:"Creator",icon:"🎨"},
+{label:"Developer",icon:"💻"},
+{label:"Entrepreneur",icon:"🚀"},
+{label:"AI Explorer",icon:"🤖"}
+]
+},
+
+  
+  {id:"maritalStatus",label:"Marital Status",type:"radio",options:["Single","Married","Divorced","Widowed"],database:"marital_status",required:true},
+  
+  
+  {id:"employment",label:"Employment Status",type:"radio",options:["Employed","Self-Employed","Unemployed","Student"],database:"employment_status",required:true},
+  {id:"occupation",label:"Your Occupation",type:"text",database:"occupation",showIf:{field:"employment",equals:"Employed"}},
+  {id:"accountType",label:"Select account type",type:"radio",options:["Creator","Developer","Student"],database:"account_type",required:true},
+  {id:"skills",label:"Your skills",type:"multi",options:["Design","Coding","Writing","Video Editing"],database:"skills",showIf:{field:"accountType",equals:"Creator"}},
+  {id:"membershipPlan",label:"Select Membership Plan",type:"radio",options:["Basic","Pro","Elite"],database:"membership_plan"},
+  {id:"primaryGoal",label:"Your primary goal",type:"radio",options:["Monetize content","Learn skills","Networking"],database:"primary_goal"}
+];
+
+
+
+const membershipFields = 
+[
+  {id:"primaryGoal", label:"What’s your main goal on Creativia?", type:"radio", options:["Build personal brand","Find clients","Collaborate","Learn skills","Monetize content"],
+  database:"primary_goal", required:true},
+  {id:"experienceLevel", label:"Your experience level", type:"radio", options:["Beginner","Intermediate","Advanced","Professional"], database:"experience_level", required:true},
+  {id:"weeklyCommitment", label:"How many hours per week?", type:"radio", options:["1–3 hours","4–7 hours","8–15 hours","Full-time"], database:"weekly_commitment", required:true},
+  {id:"interests", label:"Select your interests", type:"multi", options:["UI/UX","Web Dev","Content","Marketing","AI"], database:"interests"},
+  {id:"revenueTarget", label:"Monthly revenue goal?", type:"radio", options:["$500","$1,000","$5,000+"], database:"revenue_target", showIf:{field:"primaryGoal", equals:"Monetize content"}},
+  {id:"guidance", label:"Would you like a guided roadmap?", type:"radio", options:["Yes","No"], database:"guided_roadmap", showIf:{field:"experienceLevel", equals:"Beginner"}}
+];
+
+
+
+
+/* =====================================
+   ALITA INITIALIZER
+===================================== */
+
+
+
+function getFieldKey(field){
+  return field.id || field.key || field.name;
+}
+
+
+
+
+const registryTest = [...onboardingFields, ...membershipFields];
+
+let flow = [];
+
+let step=0;
+let data=JSON.parse(localStorage.getItem("multiPhaseData"))||{};
+
+// HELPERS
+function getVisibleFields(){return flow.filter(f=>!f.showIf||data[f.showIf.field]===f.showIf.equals);}
+function validate(field,value){
+  if(field.required&&!value) return t("This field is required");
+  
+  if(field.validation?.min&&Number(value)<field.validation.min)
+  return `${t("Minimum")} ${field.validation.min}`;
+  if(field.validation?.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) 
+  return t("Enter a valid email");
+  return null;
+}
+
+// PROFILE METER
+function updateProfileMeter(){
+  const filled = Object.keys(data).length;
+  const total = flow.length;
+  document.getElementById("profileMeterInner").style.width=((filled/total)*100)+"%";
+}
+
+// AI SUGGESTIONS
+function showAISuggestion(field){
+  let hint="";
+  if(field.id==="skills"){
+    if(data.accountType==="Creator") hint="💡 Focus on creative skills: Design & Video Editing.";
+    if(data.accountType==="Developer") hint="💡 Focus on coding & AI tools.";
+  }
+  if(field.id==="primaryGoal"){
+    if(data.primaryGoal==="Monetize content") hint="💡 Start building audience & monetization strategies.";
+    if(data.primaryGoal==="Learn skills") hint="💡 Take structured learning paths aligned with interests.";
+  }
+  const old=document.getElementById("aiHint"); if(old) old.remove();
+  if(hint){const div=document.createElement("div"); div.id="aiHint"; div.innerText=hint; document.getElementById("content").appendChild(div);}
+}
+
+
+
+
+
+
+
+const FieldRenderers = {
+
+  radio(field){
+    return `<div class="options">
+      ${field.options.map(opt=>{
+        const selected =
+          (Array.isArray(data[field.id]) && data[field.id].includes(opt)) ||
+          data[field.id] === opt ? "selected":"";
+
+        return `<div class="option ${selected}"
+                 onclick="selectOption('${opt}')">
+                 ${t(opt)}
+                </div>`;
+      }).join("")}
+    </div>`;
+  },
+
+  multi(field){
+    return FieldRenderers.radio(field);
+  },
+
+  cards(field){
+    return `<div class="card-grid">
+      ${field.options.map(opt=>{
+        const selected = data[field.id] === opt.label ? "selected":"";
+
+        return `
+          <div class="card ${selected}"
+               onclick="selectCard('${field.id}','${opt.label}')">
+
+              <div style="font-size:28px">${opt.icon||""}</div>
+              <div>${t(opt.label)}</div>
+
+          </div>
+        `;
+      }).join("")}
+    </div>`;
+  },
+
+  select(field){
+    return `<div class="field">
+      <select id="input">
+        <option value="">${t("Select an option")}</option>
+        ${field.options.map(opt=>{
+          const selected = data[field.id]===opt?"selected":"";
+          return `<option ${selected} value="${opt}">${t(opt)}</option>`;
+        }).join("")}
+      </select>
+      <label>${t(field.label)}</label>
+    </div>`;
+  },
+
+  default(field){
+    return `
+      <div class="field">
+        <input id="input"
+               type="${field.type}"
+               placeholder=" "
+               value="${data[field.id]||""}">
+        <label>${t(field.label)}</label>
+      </div>
+    `;
+  }
+
+};
+
+
+const AssistantPersonality = {
+
+  react(field, value){
+
+    if(!field) return "";
+
+    // Bias reactions
+    if(field.id === "favorite_member"){
+
+      const reactions = {
+
+        "RM":"A thoughtful leader choice. RM fans love deep lyrics.",
+        "Jin":"Worldwide handsome energy detected 😄",
+        "Suga":"Suga fans always appreciate real artistry.",
+        "J-Hope":"Sunshine energy! J-Hope brings pure positivity.",
+        "Jimin":"Jimin’s stage presence is unforgettable.",
+        "V":"V has such a unique artistic vibe.",
+        "Jungkook":"Golden maknae fans! Great choice ⭐"
+
+      };
+
+      return reactions[value] || "";
+    }
+
+    // Country reactions
+    if(field.id === "country"){
+      return `Wow! ARMY from ${value} — BTS truly connects the world.`;
+    }
+
+    return "";
+
+  }
+
+};
+
+
+
+function selectCard(fieldId, value){
+
+  data[fieldId] = value;
+
+  localStorage.setItem("multiPhaseData", JSON.stringify(data));
+
+  const field = visibleFields[step];
+
+  let reaction = "";
+
+  if(field.id === "favorite_member"){
+    reaction = `Great choice! ${value} has amazing stage presence 💜`;
+  }
+
+  const personality = AssistantPersonality.react(field,value);
+
+  if(personality){
+    reaction = personality;
+  }
+if(reaction){
+
+  alitaJustReacted = true;
+
+  typeAssistant(reaction);
+
+  setTimeout(()=>{
+    render();
+  },900);
+
+}else{
+
+  render();
+
+}
+
+}
+
+function refreshVisibleFields(){
+
+  visibleFields = getVisibleFields();
+
+}
+
+
+// RENDER
+// RENDER
+function render(){
+
+  updateProfileMeter();
+
+  refreshVisibleFields();
+
+  const fields = visibleFields;
+
+  if(step >= fields.length) return showGrowthPlan();
+
+  const field = fields[step];
+  
+if(field){
+
+  if(alitaJustReacted){
+    alitaJustReacted = false;
+  }else{
+    alitaSpeak(field.id);
+  }
+
+}
+
+const assistant = document.getElementById("assistantText");
+
+if(!assistant.innerText.trim()){
+  assistant.innerText = t("Hi! I’m here to guide you 👋");
+}
+
+  document.getElementById("progress").style.width =
+  ((step+1)/fields.length)*100+"%";
+
+  let html = `<h2>${t(field.label)}</h2>`;
+
+  const renderer =
+    FieldRenderers[field.type] ||
+    FieldRenderers.default;
+
+  html += renderer(field);
+
+  html += `
+    <div class="error" id="error"></div>
+
+    <div class="nav">
+
+      ${step>0
+        ? `<button onclick="prev()">${t("Back")}</button>`
+        : ""}
+
+      ${field.skip
+        ? `<button onclick="skipField()">${t("Skip")}</button>`
+        : ""}
+
+      <button onclick="next()">
+        ${step===fields.length-1 ? t("Finish") : t("Next")}
+      </button>
+
+    </div>
+  `;
+
+  if(step >= fields.length){
+    step = fields.length - 1;
+  }
+
+  document.getElementById("content").innerHTML = html;
+
+  showAISuggestion(field);
+
+  attachAssistantListeners();
+
+}
+
+
+
+function attachAssistantListeners(){
+
+  const inputs = document.querySelectorAll("input, select");
+
+  inputs.forEach(input=>{
+
+    input.addEventListener("focus",()=>{
+
+      // avoid tiny controls like language selector
+      if(input.type === "text" ||
+         input.type === "email" ||
+         input.type === "number"){
+
+        AssistantController.moveToField(input);
+
+      }
+
+    });
+
+    input.addEventListener("blur",()=>{
+
+      setTimeout(()=>{
+        AssistantController.goHome();
+      },300);
+
+    });
+
+  });
+
+}
+
+
+
+
+function moveAssistantToField(fieldElement){
+
+  const assistant = document.querySelector(".assistant");
+  
+
+  const rect = fieldElement.getBoundingClientRect();
+  const left = Math.max(20, rect.left - 320);
+const top = Math.max(20, rect.top - 150);
+
+
+  assistant.style.top = top + "px";
+  assistant.style.left = left + "px";
+
+  assistant.style.bottom = "auto";
+  assistant.style.right = "auto";
+
+}
+
+function resetAssistantPosition(){
+
+  const assistant = document.querySelector(".assistant");
+
+  assistant.style.top = "auto";
+  assistant.style.left = "auto";
+
+  assistant.style.bottom = assistantDefaultPosition.bottom;
+  assistant.style.right = assistantDefaultPosition.right;
+
+}
+
+
+
+setTimeout(()=>{
+
+  const inputs = document.querySelectorAll("input, select");
+
+  inputs.forEach(input=>{
+
+    input.addEventListener("focus",()=>{
+
+      moveAssistantToField(input);
+
+      const fieldLabel =
+        input.closest(".field").querySelector("label").innerText;
+
+      typeAssistant(
+        `${t("Let's fill")} ${fieldLabel.toLowerCase()}`
+      );
+
+    });
+
+  });
+
+},50);
+
+
+
+// SELECT OPTION
+function selectOption(val){
+
+  const field = visibleFields[step];
+
+  if(field.type === "radio"){
+    data[field.id] = val;
+  }
+  else{
+
+    if(!data[field.id]) data[field.id] = [];
+
+    if(data[field.id].includes(val)){
+      data[field.id] =
+        data[field.id].filter(v => v !== val);
+    } else {
+      data[field.id].push(val);
+    }
+
+  }
+
+  localStorage.setItem("multiPhaseData", JSON.stringify(data));
+
+  // AI personality reaction
+  const reaction = AssistantPersonality.react(field,val);
+
+if(reaction){
+
+  alitaJustReacted = true;
+
+  typeAssistant(reaction);
+
+  setTimeout(()=>{
+    render();
+  },900);
+
+}else{
+
+  render();
+
+}
+
+}
+
+
+
+function skipField(){
+
+  const field = visibleFields[step];
+
+  data[field.id] = null;
+
+  localStorage.setItem(
+    "multiPhaseData",
+    JSON.stringify(data)
+  );
+
+  const skipLines = {
+    favorite_member:[
+      "Keeping your bias a mystery? I like that 😏",
+      "No favorite yet? Maybe that will change soon 💜"
+    ],
+    interests:[
+      "No worries, you can explore many paths later ✨"
+    ],
+    primary_goal:[
+      "Still figuring things out? That's completely fine."
+    ]
+  };
+
+  const lines = skipLines[field.id];
+
+  if(lines){
+
+    const text = lines[Math.floor(Math.random()*lines.length)];
+
+    typeAssistant(text);
+
+    setTimeout(()=>{
+      step++;
+      render();
+    },900);
+
+  }else{
+
+    step++;
+    render();
+
+  }
+
+}
+
+
+
+function next(){
+
+
+  const field = visibleFields[step];
+  const key = getFieldKey(field);
+
+  const input = document.getElementById("input");
+
+  if(input){
+    const val = input.value;
+
+    const err = validate(field,val);
+
+    if(err){
+      document.getElementById("error").innerText = err;
+      return;
+    }
+
+    data[key] = val;
+  }
+
+  localStorage.setItem(
+    "multiPhaseData",
+    JSON.stringify(data)
+  );
+
+  step++;
+
+  render();
+
+}
+
+
+
+function prev(){
+
+  if(step > 0){
+    step--;
+    render();
+  }
+
+}
+
+
+function alitaSpeak(key){
+
+  const lines = AlitaPrompts[key];
+
+  if(!lines) return;
+
+  const text =
+    lines[Math.floor(Math.random()*lines.length)];
+
+  typeAssistant(t(text));
+
+}
+
+
+// GROWTH PLAN + CONFETTId
+function showGrowthPlan(){
+  document.getElementById("progress").style.width="100%";
+  let plan=`<h2>${t("Your Growth Plan")}</h2>
+<p>${t("Based on your profile")}, ${data.name}:</p>
+<ul>`;
+  if(data.skills) plan+=`<li>Focus on your skills: ${data.skills.join(", ")}</li>`;
+  if(data.primaryGoal) plan+=`<li>${t("Goal")}: ${t(data.primaryGoal)}</li>`;
+  if(data.accountType) plan+=`<li>Account Type: ${data.accountType}</li>`;
+  plan+=`</ul><div class="nav"><button onclick="submitProfile()">${t("Start Journey")}</button></div>`;
+  document.getElementById("content").innerHTML=plan;
+  launchConfetti();
+}
+
+// CONFETTI
+function launchConfetti(){
+  for(let i=0;i<30;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"%";
+    c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+    c.style.animationDelay=(Math.random()*2)+"s";
+    document.querySelector(".glass").appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+
+
+
+let typingTimeout;
+
+let assistantTyping;
+
+function typeAssistant(text){
+
+  const assistant = document.querySelector(".assistant");
+  const bubble = document.getElementById("assistantText");
+  const dots = document.getElementById("typingDots");
+
+  clearInterval(assistantTyping); // stop previous typing
+
+  assistant.classList.add("talking");
+
+  bubble.innerText = "";
+  dots.style.display = "inline";
+
+  let i = 0;
+
+  assistantTyping = setInterval(()=>{
+
+    bubble.innerText += text.charAt(i);
+    i++;
+
+    if(i >= text.length){
+      clearInterval(assistantTyping);
+      dots.style.display = "none";
+      assistant.classList.remove("talking");
+    }
+
+  },25);
+}
+
+
+
+
+// LANGUAGE & TRANSLATION
+let language = localStorage.getItem("lang")||"en";
+document.getElementById("languageSelect").value = language;
+
+document.getElementById("languageSelect").addEventListener("change", e=>{
+  language = e.target.value;
+  localStorage.setItem("lang", language);
+  render(); // re-render to apply translations
+});
+
+
+const translations = {
+  en: {
+    // Labels
+    "What’s your name?":"What’s your name?",
+    "Enter your email":"Enter your email",
+    "How old are you?":"How old are you?",
+    "Marital Status":"Marital Status",
+    "Employment Status":"Employment Status",
+    "Your Occupation":"Your Occupation",
+    "Select account type":"Select account type",
+    "Your skills":"Your skills",
+    "Select Membership Plan":"Select Membership Plan",
+    "Your primary goal":"Your primary goal",
+    "What’s your main goal on Creativia?":"What’s your main goal on Creativia?",
+    "Your experience level":"Your experience level",
+    "How many hours per week?":"How many hours per week?",
+    "Select your interests":"Select your interests",
+    "Monthly revenue goal?":"Monthly revenue goal?",
+    "Would you like a guided roadmap?":"Would you like a guided roadmap?",
+    "Back":"Back",
+    "Next":"Next",
+    "Finish":"Finish",
+
+    // Options
+    "Single":"Single",
+    "Married":"Married",
+    "Divorced":"Divorced",
+    "Widowed":"Widowed",
+    "Employed":"Employed",
+    "Self-Employed":"Self-Employed",
+    "Unemployed":"Unemployed",
+    "Student":"Student",
+    "Creator":"Creator",
+    "Developer":"Developer",
+    "Basic":"Basic",
+    "Pro":"Pro",
+    "Elite":"Elite",
+    "Monetize content":"Monetize content",
+    "Learn skills":"Learn skills",
+    "Networking":"Networking",
+    "Build personal brand":"Build personal brand",
+    "Find clients":"Find clients",
+    "Collaborate":"Collaborate",
+    "Beginner":"Beginner",
+    "Intermediate":"Intermediate",
+    "Advanced":"Advanced",
+    "Professional":"Professional",
+    "1–3 hours":"1–3 hours",
+    "4–7 hours":"4–7 hours",
+    "8–15 hours":"8–15 hours",
+    "Full-time":"Full-time",
+    "UI/UX":"UI/UX",
+    "Web Dev":"Web Dev",
+    "Content":"Content",
+    "Marketing":"Marketing",
+    "AI":"AI",
+    "$500":"$500",
+    "$1,000":"$1,000",
+    "$5,000+":"$5,000+",
+    "Yes":"Yes",
+    "No":"No",
+
+    // Success/Growth Plan
+    "Welcome to Creativia,":"Welcome to Creativia,",
+    "Your personalized growth plan is ready:":"Your personalized growth plan is ready:",
+    "Recommended Track:":"Recommended Track:",
+    "Main Goal:":"Main Goal:",
+    "Suggested Focus:":"Suggested Focus:",
+    "Commitment Plan:":"Commitment Plan:",
+    "Start building your creative journey today!":"Start building your creative journey today!",
+    "Various creative areas":"Various creative areas",
+    "Flexible schedule":"Flexible schedule",
+    "Explore your creativity":"Explore your creativity",
+    "Beginner Track":"Beginner Track",
+    
+    // AI Assistant
+"Hi! I’m here to guide you 👋":"Hi! I’m here to guide you 👋",
+"Choose the path that best fits you. I’ll guide you!":"Choose the path that best fits you. I’ll guide you!",
+"Select an option that suits you. You can pick multiple if needed.":"Select an option that suits you. You can pick multiple if needed.",
+"Enter your":"Enter your",
+
+// AI hints
+"Focus creative skills":"💡 Focus on creative skills: Design & Video Editing.",
+"Focus coding skills":"💡 Focus on coding & AI tools.",
+
+// Validation
+"This field is required":"This field is required",
+"Minimum":"Minimum",
+"Enter a valid email":"Enter a valid email",
+
+// Growth plan
+"Your Growth Plan":"Your Growth Plan",
+"Based on your profile":"Based on your profile",
+"Focus on your skills":"Focus on your skills",
+"Goal":"Goal",
+"Account Type":"Account Type",
+"Start Journey":"Start Journey",
+
+
+    "next":"Next",
+    "back":"Back",
+    "skip":"Skip",
+
+    "Submitting your data...":"Submitting your data...",
+    "Submission successful!":"Submission successful!",
+    "Submission failed. Please try again.":"Submission failed. Please try again.",
+    "Try Again":"Try Again",
+
+    "choose_member":"Choose your favorite member",
+    "choose_goal":"What is your main goal here?",
+    "enter_name":"Enter your fan name",
+    "enter_email":"Enter your email",
+
+    "intro":"Hi! I’m here to guide you 👋",
+    "next_prompt":"Great, let's continue.",
+    "select_prompt":"Please choose one option.",
+    "complete_prompt":"You're almost done!",
+    
+    
+
+// Submission
+"Submitting your data...":"Submitting your data...",
+"Submission successful!":"Submission successful!",
+"Submission failed. Please try again.":"Submission failed. Please try again.",
+"Try Again":"Try Again",
+
+  },
+
+  // Spanish
+  es: {
+    "What’s your name?":"¿Cuál es tu nombre?",
+    "Enter your email":"Introduce tu correo",
+    "How old are you?":"¿Cuántos años tienes?",
+    "Marital Status":"Estado civil",
+    "Employment Status":"Situación laboral",
+    "Your Occupation":"Tu ocupación",
+    "Select account type":"Selecciona tipo de cuenta",
+    "Your skills":"Tus habilidades",
+    "Select Membership Plan":"Selecciona plan de membresía",
+    "Your primary goal":"Tu objetivo principal",
+    "What’s your main goal on Creativia?":"¿Cuál es tu objetivo principal en Creativia?",
+    "Your experience level":"Tu nivel de experiencia",
+    "How many hours per week?":"Horas por semana",
+    "Select your interests":"Selecciona tus intereses",
+    "Monthly revenue goal?":"Meta de ingresos mensual",
+    "Would you like a guided roadmap?":"¿Deseas un plan guiado?",
+    "Back":"Atrás",
+    "Next":"Siguiente",
+    "Finish":"Finalizar",
+
+    "Single":"Soltero",
+    "Married":"Casado",
+    "Divorced":"Divorciado",
+    "Widowed":"Viudo",
+    "Employed":"Empleado",
+    "Self-Employed":"Autónomo",
+    "Unemployed":"Desempleado",
+    "Student":"Estudiante",
+    "Creator":"Creador",
+    "Developer":"Desarrollador",
+    "Basic":"Básico",
+    "Pro":"Pro",
+    "Elite":"Élite",
+    "Monetize content":"Monetizar contenido",
+    "Learn skills":"Aprender habilidades",
+    "Networking":"Networking",
+    "Build personal brand":"Construir marca personal",
+    "Find clients":"Encontrar clientes",
+    "Collaborate":"Colaborar",
+    "Beginner":"Principiante",
+    "Intermediate":"Intermedio",
+    "Advanced":"Avanzado",
+    "Professional":"Profesional",
+    "1–3 hours":"1–3 horas",
+    "4–7 hours":"4–7 horas",
+    "8–15 hours":"8–15 horas",
+    "Full-time":"Tiempo completo",
+    "UI/UX":"UI/UX",
+    "Web Dev":"Desarrollo Web",
+    "Content":"Contenido",
+    "Marketing":"Marketing",
+    "AI":"IA",
+    "$500":"$500",
+    "$1,000":"$1,000",
+    "$5,000+":"$5,000+",
+    "Yes":"Sí",
+    "No":"No",
+
+    "Welcome to Creativia,":"¡Bienvenido a Creativia,",
+    "Your personalized growth plan is ready:":"Tu plan de crecimiento personalizado está listo:",
+    "Recommended Track:":"Ruta recomendada:",
+    "Main Goal:":"Objetivo principal:",
+    "Suggested Focus:":"Enfoque sugerido:",
+    "Commitment Plan:":"Plan de compromiso:",
+    "Start building your creative journey today!":"¡Comienza hoy tu viaje creativo!",
+    "Various creative areas":"Varias áreas creativas",
+    "Flexible schedule":"Horario flexible",
+    "Explore your creativity":"Explora tu creatividad",
+    "Beginner Track":"Ruta para principiantes"
+  },
+
+  // French
+  fr: {
+    "What’s your name?":"Quel est votre nom?",
+    "Enter your email":"Entrez votre email",
+    "How old are you?":"Quel âge avez-vous?",
+    "Marital Status":"État civil",
+    "Employment Status":"Statut professionnel",
+    "Your Occupation":"Votre profession",
+    "Select account type":"Sélectionnez le type de compte",
+    "Your skills":"Vos compétences",
+    "Select Membership Plan":"Choisissez un plan d'abonnement",
+    "Your primary goal":"Votre objectif principal",
+    "What’s your main goal on Creativia?":"Quel est votre objectif principal sur Creativia?",
+    "Your experience level":"Votre niveau d'expérience",
+    "How many hours per week?":"Combien d'heures par semaine?",
+    "Select your interests":"Sélectionnez vos centres d'intérêt",
+    "Monthly revenue goal?":"Objectif de revenu mensuel?",
+    "Would you like a guided roadmap?":"Souhaitez-vous un plan guidé?",
+    "Back":"Retour",
+    "Next":"Suivant",
+    "Finish":"Terminer",
+
+    "Single":"Célibataire",
+    "Married":"Marié",
+    "Divorced":"Divorcé",
+    "Widowed":"Veuf",
+    "Employed":"Employé",
+    "Self-Employed":"Indépendant",
+    "Unemployed":"Chômeur",
+    "Student":"Étudiant",
+    "Creator":"Créateur",
+    "Developer":"Développeur",
+    "Basic":"Basique",
+    "Pro":"Pro",
+    "Elite":"Élite",
+    "Monetize content":"Monétiser du contenu",
+    "Learn skills":"Apprendre des compétences",
+    "Networking":"Réseautage",
+    "Build personal brand":"Créer une marque personnelle",
+    "Find clients":"Trouver des clients",
+    "Collaborate":"Collaborer",
+    "Beginner":"Débutant",
+    "Intermediate":"Intermédiaire",
+    "Advanced":"Avancé",
+    "Professional":"Professionnel",
+    "1–3 hours":"1–3 heures",
+    "4–7 hours":"4–7 heures",
+    "8–15 hours":"8–15 heures",
+    "Full-time":"Plein temps",
+    "UI/UX":"UI/UX",
+    "Web Dev":"Dév. Web",
+    "Content":"Contenu",
+    "Marketing":"Marketing",
+    "AI":"IA",
+    "$500":"500$",
+    "$1,000":"1 000$",
+    "$5,000+":"5 000$+",
+    "Yes":"Oui",
+    "No":"Non",
+
+    "Welcome to Creativia,":"Bienvenue sur Creativia,",
+    "Your personalized growth plan is ready:":"Votre plan de croissance personnalisé est prêt:",
+    "Recommended Track:":"Parcours recommandé:",
+    "Main Goal:":"Objectif principal:",
+    "Suggested Focus:":"Focus suggéré:",
+    "Commitment Plan:":"Plan d'engagement:",
+    "Start building your creative journey today!":"Commencez votre parcours créatif dès aujourd'hui!",
+    "Various creative areas":"Divers domaines créatifs",
+    "Flexible schedule":"Horaire flexible",
+    "Explore your creativity":"Explorez votre créativité",
+    "Beginner Track":"Parcours débutant"
+  },
+
+  // Turkish
+  tr: {
+    "What’s your name?":"Adınız nedir?",
+    "Enter your email":"E-posta adresinizi girin",
+    "How old are you?":"Kaç yaşındasınız?",
+    "Marital Status":"Medeni durum",
+    "Employment Status":"İstihdam durumu",
+    "Your Occupation":"Mesleğiniz",
+    "Select account type":"Hesap türünü seçin",
+    "Your skills":"Yetenekleriniz",
+    "Select Membership Plan":"Üyelik planını seçin",
+    "Your primary goal":"Ana hedefiniz",
+    "What’s your main goal on Creativia?":"Creativia'daki ana hedefiniz nedir?",
+    "Your experience level":"Deneyim seviyeniz",
+    "How many hours per week?":"Haftada kaç saat?",
+    "Select your interests":"İlgi alanlarınızı seçin",
+    "Monthly revenue goal?":"Aylık gelir hedefi",
+    "Would you like a guided roadmap?":"Rehberli bir yol haritası ister misiniz?",
+    "Back":"Geri",
+    "Next":"İleri",
+    "Finish":"Bitir",
+
+    "Single":"Bekar",
+    "Married":"Evli",
+    "Divorced":"Boşanmış",
+    "Widowed":"Dul",
+    "Employed":"Çalışıyor",
+    "Self-Employed":"Serbest Meslek",
+    "Unemployed":"İşsiz",
+    "Student":"Öğrenci",
+    "Creator":"Yaratıcı",
+    "Developer":"Geliştirici",
+    "Basic":"Temel",
+    "Pro":"Profesyonel",
+    "Elite":"Elit",
+    "Monetize content":"İçerik ile para kazanmak",
+    "Learn skills":"Beceri öğrenmek",
+    "Networking":"Ağ kurmak",
+    "Build personal brand":"Kişisel marka oluşturmak",
+    "Find clients":"Müşteri bulmak",
+    "Collaborate":"İş birliği yapmak",
+    "Beginner":"Başlangıç",
+    "Intermediate":"Orta",
+    "Advanced":"İleri",
+    "Professional":"Profesyonel",
+    "1–3 hours":"1–3 saat",
+    "4–7 hours":"4–7 saat",
+    "8–15 hours":"8–15 saat",
+    "Full-time":"Tam zamanlı",
+    "UI/UX":"UI/UX",
+    "Web Dev":"Web Geliştirme",
+    "Content":"İçerik",
+    "Marketing":"Pazarlama",
+    "AI":"Yapay Zeka",
+    "$500":"500$",
+    "$1,000":"1 000$",
+    "$5,000+":"5 000$+",
+    "Yes":"Evet",
+    "No":"Hayır",
+
+    "Welcome to Creativia,":"Creativia'ya hoş geldiniz,",
+    "Your personalized growth plan is ready:":"Kişiselleştirilmiş gelişim planınız hazır:",
+    "Recommended Track:":"Önerilen Yol:",
+    "Main Goal:":"Ana Hedef:",
+    "Suggested Focus:":"Önerilen Odak:",
+    "Commitment Plan:":"Taahhüt Planı:",
+    "Start building your creative journey today!":"Yaratıcı yolculuğunuza bugün başlayın!",
+    "Various creative areas":"Çeşitli yaratıcı alanlar",
+    "Flexible schedule":"Esnek program",
+    "Explore your creativity":"Yaratıcılığınızı keşfedin",
+    "Beginner Track":"Başlangıç Yolu"
+  },
+
+  // Korean
+  ko: {
+    "What’s your name?":"이름이 무엇인가요?",
+    "Enter your email":"이메일을 입력하세요",
+    "How old are you?":"몇 살이신가요?",
+    "Marital Status":"결혼 상태",
+    "Employment Status":"직업 상태",
+    "Your Occupation":"직업",
+    "Select account type":"계정 유형 선택",
+    "Your skills":"당신의 기술",
+    "Select Membership Plan":"회원 계획 선택",
+    "Your primary goal":"주요 목표",
+    "What’s your main goal on Creativia?":"Creativia에서 주요 목표는 무엇인가요?",
+    "Your experience level":"경험 수준",
+    "How many hours per week?":"주당 몇 시간?",
+    "Select your interests":"관심사 선택",
+    "Monthly revenue goal?":"월간 수익 목표",
+    "Would you like a guided roadmap?":"가이드 로드맵을 원하시나요?",
+    "Back":"뒤로",
+    "Next":"다음",
+    "Finish":"완료",
+
+    "Single":"미혼",
+    "Married":"기혼",
+    "Divorced":"이혼",
+    "Widowed":"사별",
+    "Employed":"취업",
+    "Self-Employed":"자영업",
+    "Unemployed":"실업",
+    "Student":"학생",
+    "Creator":"크리에이터",
+    "Developer":"개발자",
+    "Basic":"기본",
+    "Pro":"프로",
+    "Elite":"엘리트",
+    "Monetize content":"콘텐츠 수익화",
+    "Learn skills":"기술 배우기",
+    "Networking":"네트워킹",
+    "Build personal brand":"개인 브랜드 구축",
+    "Find clients":"클라이언트 찾기",
+    "Collaborate":"협업",
+    "Beginner":"초급",
+    "Intermediate":"중급",
+    "Advanced":"고급",
+    "Professional":"전문가",
+    "1–3 hours":"1–3시간",
+    "4–7 hours":"4–7시간",
+    "8–15 hours":"8–15시간",
+    "Full-time":"풀타임",
+    "UI/UX":"UI/UX",
+    "Web Dev":"웹 개발",
+    "Content":"콘텐츠",
+    "Marketing":"마케팅",
+    "AI":"AI",
+    "$500":"500$",
+    "$1,000":"1,000$",
+    "$5,000+":"5,000$+",
+    "Yes":"예",
+    "No":"아니오",
+
+    "Welcome to Creativia,":"Creativia에 오신 것을 환영합니다,",
+    "Your personalized growth plan is ready:":"개인화된 성장 계획이 준비되었습니다:",
+    "Recommended Track:":"추천 트랙:",
+    "Main Goal:":"주요 목표:",
+    "Suggested Focus:":"추천 집중 영역:",
+    "Commitment Plan:":"참여 계획:",
+    "Start building your creative journey today!":"오늘부터 창작 여정을 시작하세요!",
+    "Various creative areas":"다양한 창작 분야",
+    "Flexible schedule":"유연한 일정",
+    "Explore your creativity":"창의력을 탐색하세요",
+    "Beginner Track":"초급 트랙"
+  },
+
+  // Japanese
+  ja: {
+    "What’s your name?":"お名前は何ですか？",
+    "Enter your email":"メールアドレスを入力してください",
+    "How old are you?":"おいくつですか？",
+    "Marital Status":"配偶者の有無",
+    "Employment Status":"雇用状況",
+    "Your Occupation":"職業",
+    "Select account type":"アカウントタイプを選択",
+    "Your skills":"スキル",
+    "Select Membership Plan":"会員プランを選択",
+    "Your primary goal":"主な目標",
+    "What’s your main goal on Creativia?":"Creativiaでの主な目標は何ですか？",
+    "Your experience level":"経験レベル",
+    "How many hours per week?":"週に何時間ですか？",
+    "Select your interests":"興味を選択",
+    "Monthly revenue goal?":"月間収益目標",
+    "Would you like a guided roadmap?":"ガイド付きロードマップを希望しますか？",
+    "Back":"戻る",
+    "Next":"次へ",
+    "Finish":"完了",
+
+    "Single":"独身",
+    "Married":"既婚",
+    "Divorced":"離婚",
+    "Widowed":"死別",
+    "Employed":"就業",
+    "Self-Employed":"自営業",
+    "Unemployed":"失業",
+    "Student":"学生",
+    "Creator":"クリエイター",
+    "Developer":"開発者",
+    "Basic":"基本",
+    "Pro":"プロ",
+    "Elite":"エリート",
+    "Monetize content":"コンテンツ収益化",
+    "Learn skills":"スキルを学ぶ",
+    "Networking":"ネットワーキング",
+    "Build personal brand":"個人ブランド構築",
+    "Find clients":"クライアントを探す",
+    "Collaborate":"協力する",
+    "Beginner":"初心者",
+    "Intermediate":"中級",
+    "Advanced":"上級",
+    "Professional":"プロフェッショナル",
+    "1–3 hours":"1–3時間",
+    "4–7 hours":"4–7時間",
+    "8–15 hours":"8–15時間",
+    "Full-time":"フルタイム",
+    "UI/UX":"UI/UX",
+    "Web Dev":"Web開発",
+    "Content":"コンテンツ",
+    "Marketing":"マーケティング",
+    "AI":"AI",
+    "$500":"$500",
+    "$1,000":"$1,000",
+    "$5,000+":"$5,000+",
+    "Yes":"はい",
+    "No":"いいえ",
+     "next":"次へ",
+    "back":"戻る",
+    "skip":"スキップ",
+
+    "Submitting your data...":"送信しています...",
+    "Submission successful!":"送信が成功しました！",
+    "Submission failed. Please try again.":"送信に失敗しました。もう一度お試しください。",
+    "Try Again":"もう一度",
+
+    "choose_member":"好きなメンバーを選んでください",
+    "choose_goal":"ここでの目的は何ですか？",
+    "enter_name":"ファンネームを入力してください",
+    "enter_email":"メールアドレスを入力してください",
+
+    "intro":"こんにちは！ガイドします 👋",
+    "next_prompt":"いいですね、続けましょう。",
+    "select_prompt":"1つ選んでください。",
+    "complete_prompt":"もう少しで完了です！",
+
+    "Welcome to Creativia,":"Creativiaへようこそ、",
+    "Your personalized growth plan is ready:":"あなたのパーソナライズされた成長プランが完成しました:",
+    "Recommended Track:":"推奨トラック:",
+    "Main Goal:":"主要目標:",
+    "Suggested Focus:":"推奨フォーカス:",
+    "Commitment Plan:":"コミットメントプラン:",
+    "Start building your creative journey today!":"今日からクリエイティブな旅を始めましょう！",
+    "Various creative areas":"さまざまなクリエイティブ分野",
+    "Flexible schedule":"柔軟なスケジュール",
+    "Explore your creativity":"あなたの創造性を探求する",
+    "Beginner Track":"初心者トラック"
+  }
+};
+
+
+/* =====================================
+   AI ASSISTANT BRAIN
+===================================== */
+
+const AssistantBrain = {
+
+  intro(){
+    return t("Hi! I’m here to guide you 👋");
+  },
+
+  stepIntro(step){
+    if(step === 0) return t("Let's start by getting to know you.");
+    if(step === 1) return t("Tell me about your goals so I can guide you.");
+    if(step === 2) return t("Almost done! Choose the account type that fits you.");
+  },
+
+  fieldPrompt(field){
+
+    const prompts = {
+
+      text: [
+        () => `${t("Tell me your")} ${t(field.label).toLowerCase()}.`,
+        () => `${t("Enter your")} ${t(field.label).toLowerCase()}.`
+      ],
+
+      email: [
+        () => t("We’ll use this to contact you."),
+        () => t("Enter a valid email so we can reach you.")
+      ],
+
+      select: [
+        () => t("Choose the option that matches you best."),
+        () => t("Pick the path that feels right for you.")
+      ],
+
+      checkbox: [
+        () => t("You can select multiple skills."),
+        () => t("Choose the skills you want to grow.")
+      ]
+
+    };
+
+    const options = prompts[field.type] || [() => t("Fill in this field.")];
+
+    return options[Math.floor(Math.random() * options.length)]();
+  },
+
+  suggestion(data){
+
+    if(!data.skills) return "";
+
+    if(data.skills.includes("Design"))
+      return t("💡 You could become a creative designer.");
+
+    if(data.skills.includes("Programming"))
+      return t("💡 AI development could be a great path for you.");
+
+    if(data.skills.includes("Video Editing"))
+      return t("💡 Video creators are in huge demand.");
+
+    return "";
+  }
+
+};
+let lastAssistantMessage = "";
+
+function updateAssistant(field){
+
+  let message = "";
+
+  if(!field) return;
+
+  const reactions = {
+
+    name: "Nice to meet you! What should we call you? 😊",
+
+    email: "We'll use this email to send your membership details.",
+
+    country: "Which country are you joining from? ARMY is everywhere 🌎",
+
+    army_since: "When did your BTS journey begin? 💜",
+
+    favorite_member: "Choose your BTS bias. This is always a tough choice!",
+
+  };
+
+  message = reactions[field.id] || `Let's continue with ${field.label.toLowerCase()}.`;
+
+  if(message === lastAssistantMessage) return;
+
+  lastAssistantMessage = message;
+
+  typeAssistant(message);
+
+}
+
+
+
+
+let assistantTypingInterval = null;
+
+function typeAssistant(text){
+
+  const assistant = document.querySelector(".assistant");
+  const bubble = document.getElementById("assistantText");
+  const dots = document.getElementById("typingDots");
+
+  // 🧠 Stop any previous typing
+  if(assistantTypingInterval){
+    clearInterval(assistantTypingInterval);
+    assistantTypingInterval = null;
+  }
+
+  assistant.classList.add("talking");
+
+  bubble.textContent = "";
+  dots.style.display = "inline";
+
+  let i = 0;
+
+  assistantTypingInterval = setInterval(()=>{
+
+    bubble.textContent += text[i];
+    i++;
+
+    if(i >= text.length){
+
+      clearInterval(assistantTypingInterval);
+      assistantTypingInterval = null;
+
+      dots.style.display = "none";
+      assistant.classList.remove("talking");
+
+    }
+
+  },30);
+
+}
+
+// TRANSLATE FUNCTION
+function t(label){
+  return translations[language][label] || label;
+}
+
+
+
+
+
+
+const meta ={
+
+    card:{
+      cardId:"bts_global_army_invite",
+      type:"membership_invite"
+    },
+
+    token:{
+      value:"INV-8F9D3A1"
+    },
+
+    membership:{
+      inviteType:"community_membership",
+      approvalRequired:true,
+      accessPolicy:{durationDays:7}
+    },
+
+    processing:{
+      createProfile:true,
+      createSupportTicket:true,
+      routeDepartment:"membership"
+    },
+
+    onboarding:{
+      engine:"alita",
+      flowId:"bts_global_army_invite",
+      language:"en"
+    },
+
+    system:{
+      source:"alita_iframe",
+      submittedAt:"2026-03-16T14:00:00Z"
+    }
+  }
+
+
+function buildSubmissionMeta(){
+
+  return {
+
+    card: meta.card,
+
+    token: meta.token,
+
+    membership: meta.membership,
+
+    processing: meta.processing,
+
+    invite: meta.invite,
+
+    onboarding:{
+      engine:"alita",
+      flowId: meta.card.cardId,
+      language: language || "en",
+      version:"1.0"
+    },
+
+    system:{
+      source:"alita_iframe",
+      submittedAt:new Date().toISOString(),
+      userAgent:navigator.userAgent
+    }
+
+  };
+
+}
+
+
+
+// FINAL SUBMIT WITH GREEN CHECK AND RETURNED DATA
+// FINAL SUBMIT WITH SUCCESS + ERROR HANDLING
+
+
+function submitProfile() {
+  const payload = {};
+
+  // Collect form fields safely
+  flow.forEach(f => {
+    const key = f.database || f.id;
+    payload[key] = data[f.id] !== undefined ? data[f.id] : null;
+  });
+
+  // Attach meta safely
+  if (typeof meta === "object" && meta !== null) {
+    payload.meta = buildSubmissionMeta();
+  }
+
+  console.log("Submitting payload:", payload);
+
+  function handleResponse(event) {
+    console.log("Message received from parent:", event.data);
+
+    if (event.data?.type === "multiPhaseSubmitResponse") {
+      const response = event.data.data || {};
+      const isSuccess = event.data.success !== false && response.success !== false;
+
+      window.removeEventListener("message", handleResponse);
+
+      if (isSuccess) {
+        let summaryHTML = "<ul>";
+
+        for (const key in response) {
+          if (response[key] !== null && response[key] !== undefined && key !== "meta") {
+            const value = Array.isArray(response[key]) ? response[key].join(", ") : response[key];
+            summaryHTML += `<li><strong>${t(key)}:</strong> ${value}</li>`;
+          }
+        }
+
+        if (response.meta) {
+          summaryHTML += `
+            <li>
+              <strong>Card Meta:</strong>
+              <button class="toggleMetaBtn">Show / Hide</button>
+              <pre class="metaContent">${JSON.stringify(response.meta, null, 2)}</pre>
+            </li>
+          `;
+        }
+
+        document.getElementById("content").innerHTML = `
+          <div class="successScreen">
+            <svg class="checkmark" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark__check" fill="none" d="M14 27l7 7 16-16"/>
+            </svg>
+            <p>${t("Submission successful!")}</p>
+            ${summaryHTML}
+          </div>
+        `;
+        alitaSpeak("success");
+
+        // Add toggle functionality
+        document.querySelectorAll(".toggleMetaBtn").forEach(btn => {
+          const content = btn.nextElementSibling;
+          btn.addEventListener("click", () => content.classList.toggle("show"));
+        });
+
+        localStorage.removeItem("multiPhaseData");
+        launchConfetti();
+      } else {
+        const errorMessage = response.error || t("Submission failed. Please try again.");
+        document.getElementById("content").innerHTML = `
+          <div class="errorScreen">
+            <svg class="errorIcon" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="25" fill="none" stroke="#e74c3c" stroke-width="4"/>
+              <line x1="16" y1="16" x2="36" y2="36" stroke="#e74c3c" stroke-width="4"/>
+              <line x1="36" y1="16" x2="16" y2="36" stroke="#e74c3c" stroke-width="4"/>
+            </svg>
+            <p style="color:#e74c3c;">${errorMessage}</p>
+            <button onclick="location.reload()" class="retryBtn">${t("Try Again")}</button>
+          </div>
+        `;
+      }
+    }
+  }
+  alitaSpeak("error");
+
+  window.addEventListener("message", handleResponse);
+
+  // Show spinner immediately
+  document.getElementById("content").innerHTML = `
+    <div class="successScreen">
+      <div class="spinner"></div>
+      <p>${t("Submitting your data...")}</p>
+    </div>`;
+    alitaSpeak("submit");
+
+  // Post payload exactly as parent expects
+  window.parent.postMessage({ type: "multiPhaseSubmit", data: payload }, "*");
+}
+
+
+/* =====================================
+   DOM READY
+===================================== */
+document.addEventListener("DOMContentLoaded", () => {
+
+  initializeAlita();
+
+});
+
+
+</script>
+
+
+
+</body>
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
